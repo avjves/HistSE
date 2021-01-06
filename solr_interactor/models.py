@@ -11,6 +11,27 @@ class SolrInteractor:
         """
         Given the parameters, fetches the data from the Solr instance.
         """
-        query = parameters['q']
-        data = self.solr.search(**parameters)
+        solr_parameters = self._filter_parameters(parameters)
+        print("Solr parameters", solr_parameters)
+        data = self.solr.search(**solr_parameters)
         return data
+
+    def _filter_parameters(self, parameters):
+        """
+        Goes through the parameters and deletes any parameters that it can't handle.
+        """
+        new_parameters = {}
+        for parameter_key, parameter_value in parameters.items():
+            if parameter_value == None:
+                continue
+            if parameter_key == 'fq':
+                new_facet_fields = []
+                for facet_field in parameter_value:
+                    field, value = facet_field.split(":", 1)
+                    value = value.replace("'", '"')
+                    facet_field = '{}:"{}"'.format(field, value) 
+                    new_facet_fields.append(facet_field)
+                parameter_value = new_facet_fields
+
+            new_parameters[parameter_key] = parameter_value
+        return new_parameters

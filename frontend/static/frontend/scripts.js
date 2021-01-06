@@ -1,3 +1,69 @@
+/*
+ * Adds / removes a facet selection. Works by adding the selection to the siteParameters directly
+ * and then calling search without any new values.
+ */
+function setNewFacet(facetKey, facetValue) {
+	//const currentFacets = siteParameters.fq != undefined ? siteParameters.fq.split(",") : [];
+	const currentFacets = siteParameters.fq != undefined ? siteParameters.fq: [];
+	const newFacets = [];
+	var facetFound = false;
+	for(var i = 0; i < currentFacets.length; i++) {
+		splits = currentFacets[i].split(":");
+		currentFacetKey = splits[0];
+		currentFacetValue = splits[1];
+		if(currentFacetKey == facetKey) {
+			facetFound = true;
+			if(facetValue == '') { // No value means that we want to remove a facet instead of adding a new one
+				continue;
+			}
+			else {
+				newFacets.push(currentFacetKey + ':' + currentFacetValue);
+			}
+		}
+		else {
+			newFacets.push(currentFacetKey + ':' + currentFacetValue);
+		}
+	}
+	if(!facetFound) {
+		newFacets.push(facetKey + ':' + facetValue); 
+	}
+	siteParameters.fq = newFacets;
+	console.log(siteParameters.fq)
+	search();
+}
+
+
+/**
+ * Uses the site parameters and adds a new value to them, if one exists.
+ */
+function find_site_parameters(newOption, newValue) {
+	parameters = siteParameters; // These are returned by default by Django template
+	if(newOption != null) {
+		parameters[newOption] = newValue;	
+	}
+	return parameters;
+}
+
+/*
+ * Generates a new URL to fetch given the parameters.
+ */
+function generate_new_url(parameters) {
+	params = [];
+	for (const key in parameters) {
+		if(jsonKeys.includes(key)) {
+			console.log("KEY")
+			console.log(key)
+			params.push(key + "=" + JSON.stringify(parameters[key]));
+		}
+		else {
+			params.push(key + "=" + parameters[key]);
+		}
+	}
+	console.log(params);
+	const url = "search?" + params.join("&");
+	return url;
+}
+
 /**
  *  Search is called whenever user clicks the search button. This finds any facet etc. on the screen and adds them as GET parameters.
  */
@@ -8,33 +74,5 @@ function search(newOption=null, newValue=null) {
 	window.location = new_url;
 }
 
-function find_site_parameters(newOption, newValue) {
-	parameters = siteParameters;
-	//parameters = {};
-	//const currentLocation = window.location.href;
-	//console.log(window.location.search);
-	//return parameters
-	//const params = currentLocation.split("?", 2)[1].split("&");
-	//for(var i = 0; i < params.length; i++) {
-		//key = params[i].split("=", 1);
-		//parameters[key] = params[i].substring(key.length, params[i].length); 
-	//}
-	//console.log(parameters);
-	console.log(newOption, newValue)
-	if(newOption != null) {
-		parameters[newOption] = newValue;	
-	}
-	console.log(parameters);
-	return parameters;
 
-}
-
-
-function generate_new_url(parameters) {
-	params = [];
-	for (const key in parameters) {
-		params.push(key + "=" + parameters[key]);
-	}
-	const url = "search?" + params.join("&");
-	return url;
-}
+jsonKeys = ['fq']
