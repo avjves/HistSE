@@ -1,0 +1,32 @@
+{% load static %}
+<html>
+	<head>
+		<title> HistSE </title>
+		{% include "frontend/partials/stylesheets.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="content-wrapper" class="d-flex flex-column">
+				<div id="content">
+					{% include "frontend/partials/navbar.html" %}
+					
+					<div class="container-fluid">
+						{% include "frontend/partials/searchbar.html" %}
+						<div class="row justify-content-md-center">
+							<div class="col-xl-10">
+								<div class="card shadow mb-4 border-left-secondary">
+									<div class="card body" style="height:500px">
+										Search by typing a keyword or click HERE to access more advanced search options.
+									</div>
+								</div>
+	    						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% include "frontend/partials/scripts.html" %}
+
+	</body>
+</html>

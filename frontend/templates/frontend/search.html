@@ -1,0 +1,33 @@
+{% load static %}
+<html>
+	<head>
+		<title> HistSE </title>
+		{% include "frontend/partials/stylesheets.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="content-wrapper" class="d-flex flex-column">
+				<div id="content">
+					{% include "frontend/partials/navbar.html" %}
+					<div class="container-fluid">
+						{% include "frontend/partials/searchbar.html" %}
+						<div class="row justify-content-md-center">
+							<div class="col-xl-2">
+								{% include "frontend/partials/facets.html" %}
+							</div>
+							<div class="col-xl-8">
+								{% comment %}{% include "frontend/partials/selections.html" %}{% endcomment %}
+								{% include "frontend/partials/controls.html" %}
+								{% include "frontend/partials/results.html" with results=results %}
+								{% include "frontend/partials/pagination.html" %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% include "frontend/partials/scripts.html" %}
+
+	</body>
+</html>
