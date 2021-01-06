@@ -1,0 +1,20 @@
+<div class="card shadow mb-2 border-left-secondary">
+	<div class="card body">
+		<div class="row justify-content-between ml-2 mr-2 mt-1 mb-1"> 
+			<div>
+				<span>Showing {{start}}-{{end}} out of {{total_results}} matches...</span>
+			</div>
+			<div>	
+				<button class="btn btn-primary" type="button" onclick="search('start', {{prev_page_start}})">
+					<i class="fas fa-angle-left fa-sm"></i>
+				</button>
+				<button class="btn btn-primary" type="button" onclick="search('start', {{next_page_start}})">
+					<i class="fas fa-angle-right fa-sm"></i>
+				</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+

@@ -9,7 +9,7 @@ from solr_interactor.models import SolrInteractor
 class DataHandler:
 
     def __init__(self):
-        self.interactor = SolrInteractor(core='test')
+        self.interactor = SolrInteractor(core='swe_v2')
 
 
     def fetch_request_data(self, request):
@@ -28,7 +28,9 @@ class DataHandler:
         Extracts the HTTP GET request parameters from the request object and returns them as a dictionary.
         """
         params = {
-            'q': request.GET.get('query', None)
+            'q': request.GET.get('q', None),
+            'start': int(request.GET.get('start', 0)),
+            'rows': int(request.GET.get('rows', 10)),
         }
         return params
 
@@ -45,6 +47,13 @@ class DataHandler:
             values = [(field, result[field]) for field in fields]
             results.append(values)
         formatted_data = {
-            'results': results
+            'results': results,
+            'total_results': data.raw_response['response']['numFound'],
+            'start': parameters['start'],
+            'end': parameters['start'] + parameters['rows'],
+            'rows': parameters['rows'],
+            'next_page_start': min(parameters['start'] + parameters['rows'], data.raw_response['response']['numFound']),
+            'prev_page_start': max(0, parameters['start'] - parameters['rows']),
+            'current_query': parameters['q'],
         }
         return formatted_data
