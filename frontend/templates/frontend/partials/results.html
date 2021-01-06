@@ -1,14 +1,14 @@
-<div class="card shadow mb-4">
+<div class="card shadow mb-4 border-left-success">
 	<div class"card body">
 		{% for result in results %}
 			{% if forloop.counter|divisibleby:2 %}
-				<div class="card shadow mb-2 mt-2 border-left-secondary">
+				<div class="card shadow ml-1 mb-2 mt-2 border-left-secondary">
 			{% else %}
-				<div class="card shadow mb-2 mt-2 border-left-primary">
+				<div class="card shadow ml-1 mb-2 mt-2 border-left-dark">
 			{% endif %}
 					<div class="card body">
 						{% for field, value in result %}
-							<span>{{field}}: {{value}} </span>
+							<span class="ml-2">{{field}}: {{value}} </span>
 							<br />
 						{% endfor %}
 					</div>

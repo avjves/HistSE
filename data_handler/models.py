@@ -46,14 +46,17 @@ class DataHandler:
             fields.sort()
             values = [(field, result[field]) for field in fields]
             results.append(values)
+        parameters.update({
+        })
+        site_parameters = {k: v for k, v in parameters.items() if v is not None}
         formatted_data = {
             'results': results,
+            'parameters': parameters,
+            'site_parameters': site_parameters,
             'total_results': data.raw_response['response']['numFound'],
-            'start': parameters['start'],
-            'end': parameters['start'] + parameters['rows'],
-            'rows': parameters['rows'],
             'next_page_start': min(parameters['start'] + parameters['rows'], data.raw_response['response']['numFound']),
             'prev_page_start': max(0, parameters['start'] - parameters['rows']),
-            'current_query': parameters['q'],
+            'start_num_pagination': parameters['start'] + 1,
+            'end_num_pagination': parameters['start'] + parameters['rows'],
         }
         return formatted_data

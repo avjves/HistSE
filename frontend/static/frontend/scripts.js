@@ -9,13 +9,22 @@ function search(newOption=null, newValue=null) {
 }
 
 function find_site_parameters(newOption, newValue) {
-	parameters = {};
-	parameters.q = document.getElementById("query").value;
-
-	// Adding the just added new option
+	parameters = siteParameters;
+	//parameters = {};
+	//const currentLocation = window.location.href;
+	//console.log(window.location.search);
+	//return parameters
+	//const params = currentLocation.split("?", 2)[1].split("&");
+	//for(var i = 0; i < params.length; i++) {
+		//key = params[i].split("=", 1);
+		//parameters[key] = params[i].substring(key.length, params[i].length); 
+	//}
+	//console.log(parameters);
+	console.log(newOption, newValue)
 	if(newOption != null) {
 		parameters[newOption] = newValue;	
 	}
+	console.log(parameters);
 	return parameters;
 
 }
