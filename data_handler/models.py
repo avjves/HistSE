@@ -63,12 +63,12 @@ class DataHandler:
         for facet in available_facets:
             data_facets = data.facets['facet_fields'][facet['field']]
             facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
-            print(facet_options)
+            facet_selected = False
             if facet['field'] in selected_facets:
                 facet_options = [facet_option for facet_option in facet_options if facet_option['name'] == selected_facets[facet['field']]]
-                print(facet_options)
                 facet_options[0]['selected'] = True
-            facets.append({'field': facet['field'], 'name': facet['name'], 'options': facet_options})
+                facet_selected = True
+            facets.append({'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected})
         print(facets)
         return facets
 

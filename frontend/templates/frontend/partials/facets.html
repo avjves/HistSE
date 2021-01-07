@@ -1,20 +1,27 @@
 <h1 class="h5 mb-1 text-gray-800">Search limiting:</h1>
-<div class="card shadow mb-4 border-left-secondary">
-	{% for facet in facets %}
+{% for facet in facets %}
 
-	<div class="card-header py-3">
+<div class="card shadow mb-2 {% if facet.has_selection %} border-left-success {% else %} border-left-secondary {% endif %}">
+	<div class="card-header py-3" data-toggle="collapse" data-target="#{{facet.field}}Collapse">
 		<h6 class="m-0 font-weight-bold text-primary">{{facet.name}}</h6>
 	</div>
-	<div class="card body">
+	<div class="collapse card body p-2 {% if facet.has_selection %} show {% endif %}" id="{{facet.field}}Collapse">
 		{% for facet_option in facet.options %}
-		{% if facet_option.selected %}
-		<span onclick="setNewFacet('{{facet.field}}', '')"> {{ facet_option.name }}: {{ facet_option.value }}</span>
-		{% else %}
-		<span onclick="setNewFacet('{{facet.field}}', '{{facet_option.name}}')"> {{ facet_option.name }}: {{ facet_option.value }}</span>
-		{% endif %}
+		<div class="d-flex">
+			{% if facet_option.selected %}
+			<button class="btn" onclick="setNewFacet('{{facet.field}}', '')">
+				<i class="fas fa-times fa-sm"></i>
+			</button>
+			<span class="" onclick="setNewFacet('{{facet.field}}', '')"> {{ facet_option.name }}</span>
+			<span class="ml-auto"> {{facet_option.value }} </span>
+			{% else %}
+			<a class="mr-auto" onclick="setNewFacet('{{facet.field}}', '{{facet_option.name}}')"> {{ facet_option.name }}</a>
+			<span class="justify-content-end"> {{facet_option.value }} </span>
+			{% endif %}
+		</div>
 		{% endfor %}
 	</div>
 
-	{% endfor %}
 </div>
+{% endfor %}
 
