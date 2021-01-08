@@ -1,7 +1,16 @@
 <div class="card shadow mb-2 border-left-secondary">
 	<div class="card body">
-		<div class="row justify-content-md-end mr-2">
-			<div class="dropdown mr-2 pt-1 pb-1">
+		<div class="row ml-2">
+			<div class="btn-group btn-group-toggle mr-auto pt-1 pb-1" data-toggle="buttons">
+				<label class="btn btn-primary active">
+					<input type="radio" name="buttons" id="hit">Individual hits
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="buttons" id="clusters"> Clusters
+				</label>
+
+			</div>
+			<div class="dropdown mr-1 pt-1 pb-1">
 				<button class="btn btn-primary dropdown-toggle" type="button" id="sortDirectionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Sort direction
 				</button>		    
@@ -10,7 +19,7 @@
 					<span class="dropdown-item" onclick="search('sort', 'style asc')">Sort by style</span>
 				</div>
 			</div>
-			<div class="dropdown pt-1 pb-1">
+			<div class="dropdown mr-4 pt-1 pb-1">
 				<button class="btn btn-primary dropdown-toggle" type="button" id="resultsPerPageButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Results per page	
 				</button>		    
