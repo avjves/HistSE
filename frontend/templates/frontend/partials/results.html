@@ -7,9 +7,16 @@
 				<div class="card shadow ml-1 mb-2 mt-2">
 			{% endif %}
 					<div class="card body">
-						{% for field, value in result %}
-							<span class="ml-2">{{field}}: {{value}} </span>
+						{% for field_ui, field, value in result %}
+							<div class="row justify-content-center">
+								<div class="col-xl-1">
+									<div class="font-weight-light">{{ field_ui }}</div>
+								</div>
+								<div class="col-xl-10">
+									<span>{{ value }}</span>
+								</div>
 							<br />
+							</div>
 						{% endfor %}
 					</div>
 				</div>

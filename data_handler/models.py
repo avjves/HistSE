@@ -13,6 +13,15 @@ available_facets = [
         {'field': 'year', 'name': 'Year of apperance'},
 ]
 
+field_mapping = {
+        'cluster_id': 'Cluster ID',
+        'doc_id': 'Document ID',
+        'id': 'ID',
+        'text': 'Text',
+        'title': 'Title',
+        'year': 'Year of apperance',
+}
+
 
 class DataHandler:
 
@@ -83,7 +92,7 @@ class DataHandler:
         for result in data:
             fields = list(result.keys())
             fields.sort()
-            values = [(field, result[field]) for field in fields]
+            values = [(field_mapping[field], field, result[field]) for field in fields if field in field_mapping]
             results.append(values)
         parameters.update({
         })
