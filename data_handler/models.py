@@ -11,6 +11,8 @@ from solr_interactor.models import SolrInteractor
 available_facets = [
         {'field': 'title', 'name': 'Title'},
         {'field': 'year', 'name': 'Year of apperance'},
+        {'field': 'location', 'name': 'Location'},
+        {'field': 'country', 'name': 'Country'},
 ]
 
 field_mapping = {
@@ -19,6 +21,10 @@ field_mapping = {
         'id': 'ID',
         'text': 'Text',
         'title': 'Title',
+        'date': 'Date',
+        'url': 'URL',
+        'country': 'Country',
+        'location': 'Location',
         'year': 'Year of apperance',
 }
 
