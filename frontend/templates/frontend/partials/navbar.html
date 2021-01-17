@@ -1,4 +1,14 @@
-<nav class="navbar navbar-expand navbar-light bg-custom topbar mb-4 static-top shadow">
-	HistSE <3	
+<nav class="navbar navbar-expand  navbar-dark bg-custom topbar mb-4 static-top shadow">
+	<span class="navbar-brand">Swedish-language press as a cultural mediator, 1771–1918</span>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="navbar-nav">
+			<a class="nav-item nav-link {% if current_site == 'index' %} active {% endif %}" href="/">Home <span class="sr-only">(current)</span></a>
+			<a class="nav-item nav-link {% if current_site == 'search' %} active {% endif %}" href="/hits/search">Advanced search</a>
+			<a class="nav-item nav-link {% if current_site == 'about_us' %} active {% endif %}" href="#/about_us">About us</a>
+		</div>
+	</div>
 </nav>
 

@@ -60,8 +60,22 @@ function generate_new_url(parameters) {
 		}
 	}
 	console.log(params);
-	const url = "search?" + params.join("&");
+	
+	const search_type = hiddenParameters.search_type ? hiddenParameters.search_type : window.location.href.split("/")[3];
+	const url = 'http://localhost:5000/' + search_type + "/search?" + params.join("&");
 	return url;
+}
+
+
+function showCluster(cluster_id) {
+	hiddenParameters.search_type = 'cluster';
+	siteParameters.q = '';
+	console.log(siteParameters)
+	setNewFacet("cluster_id", cluster_id);
+}
+
+function changeSearchType(searchType) {
+	hiddenParameters.search_type = searchType;
 }
 
 /**
@@ -71,6 +85,7 @@ function search(newOption=null, newValue=null) {
 	paramaters = find_site_parameters(newOption, newValue)
 	new_url = generate_new_url(parameters);
 	//var url = "search?q=" + query;
+	console.log(new_url);
 	window.location = new_url;
 }
 

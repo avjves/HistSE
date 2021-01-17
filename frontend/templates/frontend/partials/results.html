@@ -1,4 +1,25 @@
 <div class="card shadow mb-4 p-2">
+	{% if show_metadata %}
+		<div class="card body">
+			<div class="card shadow ml-1 mb-2 mt-2">
+				<div class="card body pt-1 pb-2">
+					<h5 class="ml-5 mt-2 mb-0"> Metadata for cluster {{ current_cluster }}:</h5>
+					<hr />
+					{% for field_ui, field, value in cluster_metadata %}
+						<div class="row justify-content-center">
+							<div class="col-xl-1">
+								<div class="font-weight-light">{{ field_ui }}</div>
+							</div>
+							<div class="col-xl-10">
+								<span>{{ value }}</span>
+							</div>
+							<br />
+						</div>
+					{% endfor %}
+				</div>
+
+		</div>
+	{% endif %}
 	<div class"card body">
 		{% for result in results %}
 			{% if forloop.counter|divisibleby:2 %}
@@ -6,14 +27,22 @@
 			{% else %}
 				<div class="card shadow ml-1 mb-2 mt-2">
 			{% endif %}
-					<div class="card body">
+					<div class="card body pt-1 pb-2">
+						{% if show_metadata  and forloop.counter == 1 %}
+							<h5 class="ml-5 mt-2 mb-0">Hits:</h5>
+							<hr />
+						{% endif %}
 						{% for field_ui, field, value in result %}
 							<div class="row justify-content-center">
 								<div class="col-xl-1">
 									<div class="font-weight-light">{{ field_ui }}</div>
 								</div>
 								<div class="col-xl-10">
-									<span>{{ value }}</span>
+									{% if field == 'cluster_id' %}
+										<span onclick="showCluster('{{value}}')">{{ value }}</span>
+									{% else %}
+										<span>{{ value }}</span>
+									{% endif %}
 								</div>
 							<br />
 							</div>

@@ -2,11 +2,14 @@
 	<div class="card body">
 		<div class="row ml-2">
 			<div class="btn-group btn-group-toggle mr-auto pt-1 pb-1" data-toggle="buttons">
-				<label class="btn btn-primary active">
-					<input type="radio" name="buttons" id="hit">Individual hits
+				<label class="btn btn-primary {% if search_type == 'hits' %} active {% endif %}" onclick="search(changeSearchType('hits'))">
+					Individual hits
 				</label>
-				<label class="btn btn-secondary">
-					<input type="radio" name="buttons" id="clusters"> Clusters
+				<label class="btn btn-primary {% if search_type == 'clusters' %} active {% endif %}" onclick="search(changeSearchType('clusters'))">
+					Clusters
+				</label>
+				<label class="btn btn-primary {% if search_type == 'cluster' %} active {% else %} disabled {% endif %}">
+					Specific cluster
 				</label>
 
 			</div>
