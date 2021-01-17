@@ -1,93 +1,22 @@
-/*
- * Adds / removes a facet selection. Works by adding the selection to the siteParameters directly
- * and then calling search without any new values.
- */
-function setNewFacet(facetKey, facetValue) {
-	//const currentFacets = siteParameters.fq != undefined ? siteParameters.fq.split(",") : [];
-	const currentFacets = siteParameters.fq != undefined ? siteParameters.fq: [];
-	const newFacets = [];
-	var facetFound = false;
-	for(var i = 0; i < currentFacets.length; i++) {
-		splits = currentFacets[i].split(":");
-		currentFacetKey = splits[0];
-		currentFacetValue = splits[1];
-		if(currentFacetKey == facetKey) {
-			facetFound = true;
-			if(facetValue == '') { // No value means that we want to remove a facet instead of adding a new one
-				continue;
-			}
-			else {
-				newFacets.push(currentFacetKey + ':' + currentFacetValue);
-			}
+function searchq() {
+	const q = document.getElementById("query").value;
+	const currentUrl = window.location.href;
+	const getParams = window.location.search.substr(1)
+	const splitParams = getParams.split("&");
+	var newParams = [];
+	for(var i = 0; i < splitParams.length; i++) {
+		key = splitParams[i].split("=")[0]
+		console.log(key);
+		value = splitParams[i].substring(key.length + 1)
+		if(key == "q") {
+			value = q;
 		}
-		else {
-			newFacets.push(currentFacetKey + ':' + currentFacetValue);
+		if(key == 'fq') {
+			continue;
 		}
+		newParams.push(key + "=" + value);
+
 	}
-	if(!facetFound) {
-		newFacets.push(facetKey + ':' + facetValue); 
-	}
-	siteParameters.fq = newFacets;
-	console.log(siteParameters.fq)
-	search();
+	window.location = currentUrl.replace(getParams, newParams.join("&"));
 }
 
-
-/**
- * Uses the site parameters and adds a new value to them, if one exists.
- */
-function find_site_parameters(newOption, newValue) {
-	parameters = siteParameters; // These are returned by default by Django template
-	if(newOption != null) {
-		parameters[newOption] = newValue;	
-	}
-	return parameters;
-}
-
-/*
- * Generates a new URL to fetch given the parameters.
- */
-function generate_new_url(parameters) {
-	params = [];
-	for (const key in parameters) {
-		if(jsonKeys.includes(key)) {
-			console.log("KEY")
-			console.log(key)
-			params.push(key + "=" + JSON.stringify(parameters[key]));
-		}
-		else {
-			params.push(key + "=" + parameters[key]);
-		}
-	}
-	console.log(params);
-	
-	const search_type = hiddenParameters.search_type ? hiddenParameters.search_type : window.location.href.split("/")[3];
-	const url = 'http://localhost:5000/' + search_type + "/search?" + params.join("&");
-	return url;
-}
-
-
-function showCluster(cluster_id) {
-	hiddenParameters.search_type = 'cluster';
-	siteParameters.q = '';
-	console.log(siteParameters)
-	setNewFacet("cluster_id", cluster_id);
-}
-
-function changeSearchType(searchType) {
-	hiddenParameters.search_type = searchType;
-}
-
-/**
- *  Search is called whenever user clicks the search button. This finds any facet etc. on the screen and adds them as GET parameters.
- */
-function search(newOption=null, newValue=null) {
-	paramaters = find_site_parameters(newOption, newValue)
-	new_url = generate_new_url(parameters);
-	//var url = "search?q=" + query;
-	console.log(new_url);
-	window.location = new_url;
-}
-
-
-jsonKeys = ['fq']

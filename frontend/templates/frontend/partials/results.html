@@ -1,3 +1,4 @@
+{% load template_methods %}
 <div class="card shadow mb-4 p-2">
 	{% if show_metadata %}
 		<div class="card body">
@@ -39,7 +40,7 @@
 								</div>
 								<div class="col-xl-10">
 									{% if field == 'cluster_id' %}
-										<span onclick="showCluster('{{value}}')">{{ value }}</span>
+										<a href={{urls.cluster_links|get_index:forloop.parentloop.counter}}>{{ value }}</a>
 									{% else %}
 										<span>{{ value }}</span>
 									{% endif %}

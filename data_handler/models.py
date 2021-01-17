@@ -5,6 +5,7 @@ Rather than asking for the necessary data from indexed search engine (Solr), it 
 and asks a Interactor to fetch the data.
 """
 import json
+from operator import itemgetter
 
 from solr_interactor.models import SolrInteractor
 
@@ -74,9 +75,10 @@ class DataHandler:
         parameters = self._extract_request_parameters(request)
         print("Extracted parameters", parameters)
         data = self._fetch_data(parameters)
-        return self._format_data(data, parameters, request)
-
-
+        formatted_data = self._format_data(data, parameters, request)
+        urls = self._generate_site_urls(formatted_data, parameters, request)
+        formatted_data.update({'urls': urls})
+        return formatted_data
 
     def _extract_request_parameters(self, request):
         """
@@ -97,6 +99,7 @@ class DataHandler:
             cluster_params['facet.field'] = [facet['field'] for facet in available_cluster_facets]
             return {'hits': cluster_params}
         elif self.search_type ==  'cluster':
+            default_params['q'] = '*:*' if not default_params['q'] else default_params['q']
             params = {
                 'hits': default_params,
                 'metadata': {'q': '*:*', 'fq': default_params['fq']}
@@ -199,3 +202,111 @@ class DataHandler:
         }
 
         return formatted_data
+
+
+    def _generate_site_urls(self, data, parameters, request):
+        """
+        Generates the URLS for facets, search etc.
+        """
+        current_url_parameters = request.GET
+        urls = {}
+        urls['facets'] = self._generate_site_urls_facets(current_url_parameters, data)
+        urls['pagination'] = self._generate_site_urls_pagination(current_url_parameters)
+        urls['cluster_links'] = self._generate_site_urls_cluster_links(current_url_parameters, data)
+        print('urls', urls)
+        return urls
+
+
+    def _generate_site_urls_cluster_links(self, current_url_parameters, data):
+        """
+        Generates links to all cluster_id fields to show that particular cluster.
+        Generates a list where the index matches the result list data['results']
+        """
+        urls = []
+        for result in data['results']:
+            for field in result: #field = [UI string, field name, value]
+                if field[1] == 'cluster_id': 
+                    url_params = dict(current_url_parameters)
+                    url_params['q'] = ''
+                    url_params['fq'] = ['{}:{}'.format("cluster_id", field[2])]
+                    urls.append(self._generate_site_url(url_params, search_type='cluster'))
+        return urls
+
+    def _generate_site_urls_facets(self, current_url_parameters, data):
+        """
+        Generates the URLS for any facet links.
+        Generates a list where the index matches the facet list data['facets']
+        """
+        print(data['facets'])
+        facet_urls = []
+        for facet in data['facets']:
+            single_facet_urls=[]
+            if facet['has_selection']:
+                for option in facet['options']:
+                    if option['selected']: # Found the selected option
+                        facet_params = dict(current_url_parameters)
+                        facet_params['fq'] = json.loads(facet_params['fq'][0])
+                        for i in range(0, len(facet_params['fq'])):
+                            # print("fac", facet_params['fq'][i].split(":", 1), facet['field'])
+                            if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                                print("!asd", facet_params['fq'].pop(i))
+                                break
+                        single_facet_urls.append(self._generate_site_url(facet_params))
+                    else: # Not selected option = URL doesn't really matter as it isn't show anyways
+                        single_facet_urls.append(self._generate_site_url(current_url_parameters))
+            else:
+                for option in facet['options']:
+                    facet_params = dict(current_url_parameters)
+                    if 'fq' in facet_params:
+                        facet_params['fq'] = json.loads(facet_params['fq'][0])
+                    else:
+                        facet_params['fq'] = []
+                    facet_params['fq'].append('{}:{}'.format(facet['field'], option['name']))
+                    single_facet_urls.append(self._generate_site_url(facet_params))
+            facet_urls.append(single_facet_urls)
+        return facet_urls
+        
+
+    def _generate_site_urls_pagination(self, current_url_parameters):
+        """
+        Generates the URLs for previous and next page links
+        """
+        start = int(current_url_parameters.get('start', 0))
+        rows_per_page = int(current_url_parameters.get('rows', 10))
+        prev_page = max(start-rows_per_page, 0)
+        prev_page_params = {}
+        prev_page_params.update(current_url_parameters)
+        prev_page_params['start'] = prev_page
+        prev_page_url = self._generate_site_url(prev_page_params)
+        next_page = start+rows_per_page
+        next_page_params = {}
+        next_page_params.update(current_url_parameters)
+        next_page_params['start'] = next_page
+        next_page_url = self._generate_site_url(next_page_params)
+        return {'previous_page': prev_page_url, 'next_page': next_page_url}
+
+
+
+    def _generate_site_url(self, parameters, search_type=None):
+        """
+        Given a dict of parameters, generates a URL
+        """
+        print('generation', parameters)
+        params = []
+        for param, value in parameters.items():
+            if not value: continue
+            if type(value) == list:
+                if param == 'fq':
+                    value = json.dumps(value)
+                else:
+                    value = value[0]
+            params.append([param, value])
+        # params = [(param, value) for param,value in parameters.items()]
+        params.sort(key=itemgetter(0))
+        params = ["=".join([str(param), str(value)]) for param, value in params]
+        search_type = search_type if search_type else self.search_type #Use current search_type if not specified by function call
+        url = "/{}/search?{}".format(search_type, "&".join(params))
+        return url
+
+
+

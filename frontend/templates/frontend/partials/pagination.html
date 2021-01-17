@@ -5,12 +5,14 @@
 				<span>Showing {{start_num_pagination}}-{{end_num_pagination}} out of {{total_results}} matches...</span>
 			</div>
 			<div>	
-				<button class="btn btn-primary" type="button" onclick="search('start', {{prev_page_start}})">
+				{#<button class="btn btn-primary" type="button" onclick="search('start', {{prev_page_start}})">#}
+				<a class="btn btn-primary" role="button" href="{{ urls.pagination.previous_page }}">
 					<i class="fas fa-angle-left fa-sm"></i>
-				</button>
-				<button class="btn btn-primary" type="button" onclick="search('start', {{next_page_start}})">
+				</a>
+				{#<button class="btn btn-primary" type="button" onclick="search('start', {{next_page_start}})">#}
+				<a class="btn btn-primary" role="button" href="{{ urls.pagination.next_page }}">
 					<i class="fas fa-angle-right fa-sm"></i>
-				</button>
+				</a>
 			</div>
 		</div>
 
