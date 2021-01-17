@@ -2,17 +2,13 @@
 <div class="card shadow mb-2 border-left-secondary">
 	<div class="card body">
 		<div class="row ml-2">
-			<div class="btn-group btn-group-toggle mr-auto pt-1 pb-1" data-toggle="buttons">
-				<label class="btn btn-primary {% if search_type == 'hits' %} active {% endif %}" onclick="search(changeSearchType('hits'))">
+			<div class="btn-group mr-auto pt-1 pb-1">
+				<a class="btn btn-primary {% if search_type == 'hits' %} active {% endif %}" href="{{ urls.search_type.hits }}">
 					Individual hits
-				</label>
-				<label class="btn btn-primary {% if search_type == 'clusters' %} active {% endif %}" onclick="search(changeSearchType('clusters'))">
+				</a>
+				<a class="btn btn-primary {% if search_type == 'clusters' %} active {% endif %}" href="{{ urls.search_type.clusters }}">
 					Clusters
-				</label>
-				<label class="btn btn-primary {% if search_type == 'cluster' %} active {% else %} disabled {% endif %}">
-					Specific cluster
-				</label>
-
+				</a>
 			</div>
 			<div class="dropdown mr-1 pt-1 pb-1">
 				<button class="btn btn-primary dropdown-toggle" type="button" id="sortDirectionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

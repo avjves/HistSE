@@ -262,8 +262,32 @@ class DataHandler:
         urls['cluster_links'] = self._generate_site_urls_cluster_links(current_url_parameters, data)
         urls['sort_options'] = self._generate_site_urls_sort_options(current_url_parameters, data)
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
+        urls['search_type'] = self._generate_site_urls_change_search_type(current_url_parameters, data)
         print('urls', urls)
         return urls
+
+
+    def _generate_site_urls_change_search_type(self, current_url_parameters, data):
+        """
+        Generates URLs to change the site between hits and clusters searches.
+        """
+        hits_params = dict(current_url_parameters)
+        clusters_params = dict(current_url_parameters)
+        if self.search_type == 'cluster':
+            clusters_params['fq'] = []
+            clusters_params['sort'] = ''
+            hits_params['fq'] = []
+            hits_params['sort'] = ''
+        elif self.search_type == 'hits':
+            clusters_params['fq'] = []
+            clusters_params['sort'] = ''
+        else:
+            hits_params['fq'] = []
+            hits_params['sort'] = ''
+        hits_search_type = self._generate_site_url(hits_params, 'hits')
+        clusters_search_type = self._generate_site_url(clusters_params, 'clusters')
+        return {'hits': hits_search_type, 'clusters': clusters_search_type}
+            
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -376,7 +400,10 @@ class DataHandler:
         params.sort(key=itemgetter(0))
         params = ["=".join([str(param), str(value)]) for param, value in params]
         search_type = search_type if search_type else self.search_type #Use current search_type if not specified by function call
-        url = "/{}/search?{}".format(search_type, "&".join(params))
+        if params:
+            url = "/{}/search?{}".format(search_type, "&".join(params))
+        else:
+            url = "/{}/search".format(search_type)
         return url
 
 
