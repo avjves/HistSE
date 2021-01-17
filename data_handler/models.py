@@ -51,7 +51,7 @@ available_rows_per_page_options = [
 hit_field_mapping = {
         'cluster_id': 'Cluster ID',
         'doc_id': 'Document ID',
-        'id': 'ID',
+        # 'id': 'ID',
         'text': 'Text',
         'title': 'Title',
         'date': 'Date',
@@ -64,7 +64,7 @@ hit_field_mapping = {
 cluster_field_mapping = {
         'cluster_id': 'Cluster ID',
         'doc_id': 'Document ID',
-        'id': 'ID',
+        # 'id': 'ID',
         'count': 'Count',
         'timespan': 'Timespan',
         'locations': 'Locations',
