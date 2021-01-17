@@ -23,6 +23,30 @@ available_cluster_facets = [
         # {'field': 'title', 'name': 'Title'},
         ]
 
+available_hit_sort_options = [
+        {'field': 'title', 'name': 'Sort by title, ascending', 'direction': 'asc'},
+        {'field': 'title', 'name': 'Sort by title, descending', 'direction': 'desc'},
+        {'field': 'date', 'name': 'Sort by date, ascending', 'direction': 'asc'},
+        {'field': 'date', 'name': 'Sort by date, descending', 'direction': 'desc'},
+        {'field': 'country', 'name': 'Sort by country, ascending', 'direction': 'asc'},
+        {'field': 'country', 'name': 'Sort by country, descending', 'direction': 'desc'},
+        {'field': 'location', 'name': 'Sort by location, ascending', 'direction': 'asc'},
+        {'field': 'location', 'name': 'Sort by location, descending', 'direction': 'desc'},
+        {'field': 'year', 'name': 'Sort by year, ascending', 'direction': 'asc'},
+        {'field': 'year', 'name': 'Sort by year, descending', 'direction': 'desc'},
+]
+
+available_cluster_sort_options = [
+        {'field': 'starting_title', 'name': 'Sort by title, ascending', 'direction': 'asc'},
+        {'field': 'starting_title', 'name': 'Sort by title, descending', 'direction': 'desc'},
+]
+
+available_rows_per_page_options = [
+        {'name': '5 per page', 'value': 5},
+        {'name': '10 per page', 'value': 10},
+        {'name': '20 per page', 'value': 20},
+        {'name': '50 per page', 'value': 50},
+]
 
 hit_field_mapping = {
         'cluster_id': 'Cluster ID',
@@ -35,8 +59,6 @@ hit_field_mapping = {
         'country': 'Country',
         'location': 'Location',
         'year': 'Year',
-        'starting_text': 'Starting Text',
-        'starting_country': 'Country',
 }
 
 cluster_field_mapping = {
@@ -89,6 +111,7 @@ class DataHandler:
                 'start': int(request.GET.get('start', 0)),
                 'rows': int(request.GET.get('rows', 10)),
                 'fq': json.loads(request.GET.get('fq', "[]")),
+                'sort': request.GET.get('sort', None),
                 'facet': 'true',
                 'facet.field': [facet['field'] for facet in available_hit_facets],
         }
@@ -173,6 +196,8 @@ class DataHandler:
         formatted_data = {
             'results': results,
             'facets': self._format_facets(data, parameters),
+            'sort_options': self._format_sort_options(data, parameters),
+            'rows_per_page_options': self._format_rows_per_page_options(data, parameters),
             'parameters': parameters,
             'site_parameters': site_parameters,
             'total_results': data.raw_response['response']['numFound'],
@@ -183,6 +208,27 @@ class DataHandler:
             'search_type': self.search_type,
         }
         return formatted_data
+
+    def _format_sort_options(self, data, parameters):
+        """
+        Formats the currently available sort options for django templates.
+        Determines available sort options by the search_type.
+        """
+        options = []
+        if self.search_type == 'clusters':
+            sort_options = available_cluster_sort_options
+        else:
+            sort_options = available_hit_sort_options
+        return sort_options
+
+    def _format_rows_per_page_options(self, data, parameters):
+        """
+        Formats the currently available rows per page options for django templates.
+        """
+        return available_rows_per_page_options
+
+
+
 
     def _format_metadata(self, data, parameters, request):
         """
@@ -204,6 +250,7 @@ class DataHandler:
         return formatted_data
 
 
+
     def _generate_site_urls(self, data, parameters, request):
         """
         Generates the URLS for facets, search etc.
@@ -213,6 +260,8 @@ class DataHandler:
         urls['facets'] = self._generate_site_urls_facets(current_url_parameters, data)
         urls['pagination'] = self._generate_site_urls_pagination(current_url_parameters)
         urls['cluster_links'] = self._generate_site_urls_cluster_links(current_url_parameters, data)
+        urls['sort_options'] = self._generate_site_urls_sort_options(current_url_parameters, data)
+        urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
         print('urls', urls)
         return urls
 
@@ -285,6 +334,28 @@ class DataHandler:
         next_page_url = self._generate_site_url(next_page_params)
         return {'previous_page': prev_page_url, 'next_page': next_page_url}
 
+    def _generate_site_urls_sort_options(self, current_url_parameters, data):
+        """
+        Generates the URLs for sort options.
+        Generates a list where the index matches the facet list data['sort_options']
+        """
+        urls = []
+        for sort_option in data['sort_options']:
+            params = dict(current_url_parameters)
+            params['sort'] = "{} {}".format(sort_option['field'], sort_option['direction'])
+            urls.append(self._generate_site_url(params))
+        return urls
+
+    def _generate_site_urls_rows_per_page_options(self, current_url_parameters, data):
+        """
+        Generates the URLs for deciding how many results are shown per page.
+        """
+        urls = []
+        for option in data['rows_per_page_options']:
+            params = dict(current_url_parameters)
+            params['rows'] = option['value']
+            urls.append(self._generate_site_url(params))
+        return urls
 
 
     def _generate_site_url(self, parameters, search_type=None):

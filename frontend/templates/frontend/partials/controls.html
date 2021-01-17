@@ -1,3 +1,4 @@
+{% load template_methods %}
 <div class="card shadow mb-2 border-left-secondary">
 	<div class="card body">
 		<div class="row ml-2">
@@ -18,8 +19,9 @@
 					Sort direction
 				</button>		    
 				<div class="dropdown-menu animated--fade-in" aria-labelledby="sortDirectionButton" style="">
-					<span class="dropdown-item" onclick="search('sort', 'title asc')">Sort by title</span>
-					<span class="dropdown-item" onclick="search('sort', 'style asc')">Sort by style</span>
+					{% for sort_option in sort_options %}
+						<a class="dropdown-item" href="{{ urls.sort_options|get_index:forloop.counter }}"> {{ sort_option.name }}</a>
+					{% endfor %}
 				</div>
 			</div>
 			<div class="dropdown mr-4 pt-1 pb-1">
@@ -27,8 +29,9 @@
 					Results per page	
 				</button>		    
 				<div class="dropdown-menu animated--fade-in" aria-labelledby="resultsPerPageButton" style="">
-					<span class="dropdown-item" onclick="search('rows', 10)">10 per page</span>
-					<span class="dropdown-item" onclick="search('rows', 20)">20 per page</span>
+					{% for rows_per_page_option in rows_per_page_options %}
+						<a class="dropdown-item" href="{{ urls.rows_per_page_options|get_index:forloop.counter }}"> {{ rows_per_page_option.name }}</a>
+					{% endfor %}
 				</div>
 
 			</div>
