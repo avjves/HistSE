@@ -10,9 +10,23 @@
 					Clusters
 				</a>
 			</div>
+
+			<div class="mr-1 pt-1 pb-1">
+				<a class="btn btn-primary" role="button" href="{{ urls.result_type.clusters }}">
+					<i class="p-1 fad fa-align-justify"></i>
+				</a>
+			</div>
+
+
+			<div class="mr-5 pt-1 pb-1">
+				<a class="btn btn-primary" role="button" href="{{ urls.result_type.charts }}">
+					<i class="p-1 fal fa-chart-bar"></i>
+				</a>
+			</div>
+
 			<div class="dropdown mr-1 pt-1 pb-1">
 				<button class="btn btn-primary dropdown-toggle" type="button" id="sortDirectionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Sort direction
+					Sort by
 				</button>		    
 				<div class="dropdown-menu animated--fade-in" aria-labelledby="sortDirectionButton" style="">
 					{% for sort_option in sort_options %}

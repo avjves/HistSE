@@ -2,11 +2,11 @@
 	<div class="col-xl-4">
 		<div class="card shadow mb-4 border-left-primary">
 			{#<form class="d-none d-sm-inline-block form-inline ml-md-3 my-2 my-md-0 mw-100 navbar-search" onsubmit="search('q', document.getElementById('query').value);return false">#}
-			<form class="d-none d-sm-inline-block form-inline ml-md-3 my-2 my-md-0 mw-100 navbar-search" onsubmit="searchq();return false">
+			<form class="d-none d-sm-inline-block form-inline ml-md-3 my-2 my-md-0 mw-100 navbar-search" onsubmit="search();return false">
 				<div class="input-group">
 					<input id="query" type="text" class="form-control bg-light border-0 small" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" value="{{ parameters.q|default_if_none:" " }}" />
 					{#<button class="btn btn-primary" type="button" onclick="search('q', document.getElementById('query').value)">#}
-					<button class="btn btn-primary" role="button" onclick="searchq()">
+					<button class="btn btn-primary" role="button" onclick="search()">
 						<i class="fas fa-search fa-sm"></i>
 					</button>
 				</div>

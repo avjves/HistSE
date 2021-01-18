@@ -1,4 +1,4 @@
-function searchq() {
+function search() {
 	const q = document.getElementById("query").value;
 	const currentUrl = window.location.href;
 	const getParams = window.location.search.substr(1)

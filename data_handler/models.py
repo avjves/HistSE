@@ -85,9 +85,6 @@ class DataHandler:
         self.search_type = search_type
         self.hit_interactor = SolrInteractor(core='swe_v2')
         self.cluster_interactor = SolrInteractor(core='swe_v2_clusters')
-        # self.available_facets = AvailableFacets()
-
-
 
     def fetch_request_data(self, request):
         """
@@ -178,6 +175,7 @@ class DataHandler:
             formatted_data.update(self._format_metadata(data['metadata'], parameters['metadata'], request))
         return formatted_data
 
+
     def _format_hit_data(self, data, parameters, request):
         """
         Receives the data from the interactor and formats it in a format that can be returned to the client.
@@ -263,6 +261,7 @@ class DataHandler:
         urls['sort_options'] = self._generate_site_urls_sort_options(current_url_parameters, data)
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
         urls['search_type'] = self._generate_site_urls_change_search_type(current_url_parameters, data)
+        urls['result_type'] = self._generate_site_urls_change_result_type(current_url_parameters, data)
         print('urls', urls)
         return urls
 
@@ -284,10 +283,18 @@ class DataHandler:
         else:
             hits_params['fq'] = []
             hits_params['sort'] = ''
-        hits_search_type = self._generate_site_url(hits_params, 'hits')
-        clusters_search_type = self._generate_site_url(clusters_params, 'clusters')
+        hits_search_type = self._generate_site_url(hits_params, search_type='hits')
+        clusters_search_type = self._generate_site_url(clusters_params, search_type='clusters')
         return {'hits': hits_search_type, 'clusters': clusters_search_type}
             
+
+    def _generate_site_urls_change_result_type(self, current_url_parameters, data):
+        """
+        Generates URLs to change between showing cluster texts or charts.
+        """
+        clusters_url = self._generate_site_url(current_url_parameters, result_type='search')
+        charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
+        return {'clusters': clusters_url, 'charts': charts_url}
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -382,7 +389,7 @@ class DataHandler:
         return urls
 
 
-    def _generate_site_url(self, parameters, search_type=None):
+    def _generate_site_url(self, parameters, search_type=None, result_type=None):
         """
         Given a dict of parameters, generates a URL
         """
@@ -396,15 +403,48 @@ class DataHandler:
                 else:
                     value = value[0]
             params.append([param, value])
-        # params = [(param, value) for param,value in parameters.items()]
         params.sort(key=itemgetter(0))
         params = ["=".join([str(param), str(value)]) for param, value in params]
         search_type = search_type if search_type else self.search_type #Use current search_type if not specified by function call
+        result_type = result_type if result_type else 'search'
         if params:
-            url = "/{}/search?{}".format(search_type, "&".join(params))
+            url = "/{}/{}?{}".format(search_type, result_type, "&".join(params))
         else:
-            url = "/{}/search".format(search_type)
+            url = "/{}/{}".format(search_type, result_type)
         return url
 
 
 
+class Charter:
+
+    def __init__(self):
+        pass
+
+    def chart(self, data):
+        """
+        Generates a chart from the given query.
+        """
+        values = []
+        labels, values, name = [], [], ''
+        for facet in data['facets']:
+            if facet['field'] == 'year':
+                for option in facet['options']:
+                    year = int(option['name'])
+                    value = int(option['value'])
+                    values.append([year, value])
+                if values:
+                    values.sort(key=itemgetter(0))
+                    labels, values = list(zip(*values))
+                    name = '# of hits per year'
+                break
+            if facet['field'] == 'starting_year':
+                for option in facet['options']:
+                    year = int(option['name'])
+                    value = int(option['value'])
+                    values.append([year, value])
+                if values:
+                    values.sort(key=itemgetter(0))
+                    labels, values = list(zip(*values))
+                    name = '# of clusters per year'
+                break
+        return labels, values, name
