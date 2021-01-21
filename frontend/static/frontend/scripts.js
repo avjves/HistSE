@@ -29,7 +29,16 @@ function search() {
 	console.log(newParams)
 	var newUrl = '';
 	if(getParams.length == 0) {
-		newUrl = currentUrl + "?" + newParams.join("&");	
+		var handler = currentUrl.split("/");
+		handler = handler[handler.length-1];
+		var okHandles = ['search', 'charts'];
+		if(okHandles.includes(handler)) {
+			handler = '';
+		}
+		else {
+			handler = 'hits/search';
+		}
+		newUrl = currentUrl + handler + "?" + newParams.join("&");	
 		console.log(newUrl);
 	}
 	else {
