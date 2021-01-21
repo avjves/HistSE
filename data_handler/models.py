@@ -204,7 +204,7 @@ class DataHandler:
         site_parameters = {k: v for k, v in parameters.items() if v != None and v != []}
         # import pdb;pdb.set_trace()
         formatted_data = {
-            'results': self._add_highlighting(results, ids, data.raw_response['highlighting']),
+            'results': self._add_highlighting(results, ids, data),
             'facets': self._format_facets(data, parameters),
             'sort_options': self._format_sort_options(data, parameters),
             'rows_per_page_options': self._format_rows_per_page_options(data, parameters),
@@ -219,19 +219,21 @@ class DataHandler:
         }
         return formatted_data
 
-    def _add_highlighting(self, results, ids, highlighting_data):
+    def _add_highlighting(self, results, ids, data):
         """
         Replaces the necessary parts of results with the highlighted data.
         """
-        for result_i, result in enumerate(results):
-            result_id = ids[result_i]
-            highlights = highlighting_data[result_id]
-            for key, value in highlights.items():
-                for highlighting in value:
-                    non_highlighted = highlighting.replace("<em>", "").replace("</em>", "")
-                    for res_i, res in enumerate(result):
-                        if res[1] == key:
-                            result[res_i][2] = result[res_i][2].replace(non_highlighted, highlighting)
+        if 'highlighting' in data.raw_response:
+            highlighting_data = data.raw_response['highlighting']
+            for result_i, result in enumerate(results):
+                result_id = ids[result_i]
+                highlights = highlighting_data[result_id]
+                for key, value in highlights.items():
+                    for highlighting in value:
+                        non_highlighted = highlighting.replace("<em>", "").replace("</em>", "")
+                        for res_i, res in enumerate(result):
+                            if res[1] == key:
+                                result[res_i][2] = result[res_i][2].replace(non_highlighted, highlighting)
         return results
 
     def _format_sort_options(self, data, parameters):
@@ -343,7 +345,10 @@ class DataHandler:
         Generates the URLS for any facet links.
         Generates a list where the index matches the facet list data['facets']
         """
+        current_url_parameters = dict(current_url_parameters)
         facet_urls = []
+        if 'start' in current_url_parameters:
+            del current_url_parameters['start']
         for facet in data['facets']:
             single_facet_urls=[]
             if facet['has_selection']:
@@ -353,6 +358,7 @@ class DataHandler:
                         facet_params['fq'] = json.loads(facet_params['fq'][0])
                         for i in range(0, len(facet_params['fq'])):
                             if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                                facet_params['fq'].pop(i)
                                 break
                         single_facet_urls.append(self._generate_site_url(facet_params))
                     else: # Not selected option = URL doesn't really matter as it isn't show anyways
