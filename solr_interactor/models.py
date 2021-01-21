@@ -6,6 +6,15 @@ class SolrInteractor:
         solr_address = "{}:{}/solr/{}/".format(host, port, core)
         self.solr = pysolr.Solr(solr_address)
 
+    def _do_bogus_search(self, params):
+        """
+        Does a random search which *hopefully* doesn't match anything.
+        Used to quickly make a SOLR response with no data in it.
+        """
+        print("bogus ran!")
+        params['q'] = 'qweifjöewfjaewiofjewiföjaweofiöjwaeöfoiwryuopioasdfhjl234'
+        return self.solr.search(**params)
+
 
     def fetch_data(self, parameters):
         """
@@ -13,7 +22,10 @@ class SolrInteractor:
         """
         solr_parameters = self._filter_parameters(parameters)
         print("Solr parameters", solr_parameters)
-        data = self.solr.search(**solr_parameters)
+        try:
+            data = self.solr.search(**solr_parameters)
+        except pysolr.SolrError:
+            return self._do_bogus_search(solr_parameters)
         return data
 
     def _filter_parameters(self, parameters):
