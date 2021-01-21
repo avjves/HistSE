@@ -289,7 +289,7 @@ class DataHandler:
         current_url_parameters = request.GET
         urls = {}
         urls['facets'] = self._generate_site_urls_facets(current_url_parameters, data)
-        urls['pagination'] = self._generate_site_urls_pagination(current_url_parameters)
+        urls['pagination'] = self._generate_site_urls_pagination(current_url_parameters, data)
         urls['cluster_links'] = self._generate_site_urls_cluster_links(current_url_parameters, data)
         urls['sort_options'] = self._generate_site_urls_sort_options(current_url_parameters, data)
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
@@ -380,7 +380,7 @@ class DataHandler:
         return facet_urls
         
 
-    def _generate_site_urls_pagination(self, current_url_parameters):
+    def _generate_site_urls_pagination(self, current_url_parameters, data):
         """
         Generates the URLs for previous and next page links
         """
@@ -392,6 +392,7 @@ class DataHandler:
         prev_page_params['start'] = prev_page
         prev_page_url = self._generate_site_url(prev_page_params)
         next_page = start+rows_per_page
+        next_page = min(next_page, data['total_results']-1)
         next_page_params = {}
         next_page_params.update(current_url_parameters)
         next_page_params['start'] = next_page
