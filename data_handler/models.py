@@ -129,9 +129,13 @@ class DataHandler:
             return {'hits': cluster_params}
         elif self.search_type ==  'cluster':
             default_params['q'] = '*:*' if not default_params['q'] else default_params['q']
+            cluster_params = {}
+            cluster_params['q'] = '*:*'
+            cluster_params['fq'] = [fq for fq in default_params['fq'] if fq.split(":")[0] == 'cluster_id']
+            print(cluster_params)
             params = {
                 'hits': default_params,
-                'metadata': {'q': '*:*', 'fq': default_params['fq']}
+                'metadata': cluster_params,
             }
             return params
 
