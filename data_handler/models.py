@@ -20,6 +20,7 @@ available_cluster_facets = [
         {'field': 'starting_country', 'name': 'Starting country'},
         {'field': 'starting_location', 'name': 'Starting location'},
         {'field': 'starting_year', 'name': 'Starting year of apperance'},
+        {'field': 'crossed', 'name': 'Span across multiple countries'},
         # {'field': 'title', 'name': 'Title'},
         ]
 
@@ -75,6 +76,12 @@ cluster_field_mapping = {
         'starting_country': 'Country',
         'starting_location': 'Location',
         'starting_year': 'Starting year',
+        'crossed': 'Span across mulitiple countries',
+        'out_city': 'From city',
+        'out_country': 'From country',
+        'in_city': 'To city',
+        'in_country': 'To country',
+        'first_text': 'Text from the first hit',
 }
 
 hit_field_mapping.update(cluster_field_mapping)
@@ -109,6 +116,8 @@ class DataHandler:
                 'rows': int(request.GET.get('rows', 10)),
                 'fq': json.loads(request.GET.get('fq', "[]")),
                 'sort': request.GET.get('sort', None),
+                'hl': 'true',
+                'hl.fl': 'text',
                 'facet': 'true',
                 'facet.field': [facet['field'] for facet in available_hit_facets],
         }
@@ -116,6 +125,7 @@ class DataHandler:
             return {'hits': default_params}
         elif self.search_type ==  'clusters':
             cluster_params = default_params
+            cluster_params['hl.fl'] = 'first_text'
             cluster_params['facet.field'] = [facet['field'] for facet in available_cluster_facets]
             return {'hits': cluster_params}
         elif self.search_type ==  'cluster':
@@ -182,17 +192,20 @@ class DataHandler:
         That is, data that can be rendered with the requested template.
         """
         results = []
+        ids = []
         data_results = data
         for result in data:
             fields = list(result.keys())
             fields.sort()
-            values = [(hit_field_mapping[field], field, result[field]) for field in fields if field in hit_field_mapping]
+            values = [[hit_field_mapping[field], field, result[field]] for field in fields if field in hit_field_mapping]
             results.append(values)
+            ids.append(result['id'])
         parameters.update({
         })
         site_parameters = {k: v for k, v in parameters.items() if v != None and v != []}
+        # import pdb;pdb.set_trace()
         formatted_data = {
-            'results': results,
+            'results': self._add_highlighting(results, ids, data.raw_response['highlighting']),
             'facets': self._format_facets(data, parameters),
             'sort_options': self._format_sort_options(data, parameters),
             'rows_per_page_options': self._format_rows_per_page_options(data, parameters),
@@ -206,6 +219,24 @@ class DataHandler:
             'search_type': self.search_type,
         }
         return formatted_data
+
+    def _add_highlighting(self, results, ids, highlighting_data):
+        """
+        Replaces the necessary parts of results with the highlighted data.
+        """
+        print("hig", highlighting_data)
+        for result_i, result in enumerate(results):
+            print(result)
+            result_id = ids[result_i]
+            highlights = highlighting_data[result_id]
+            for key, value in highlights.items():
+                for highlighting in value:
+                    print(key, highlighting)
+                    non_highlighted = highlighting.replace("<em>", "").replace("</em>", "")
+                    for res_i, res in enumerate(result):
+                        if res[1] == key:
+                            result[res_i][2] = result[res_i][2].replace(non_highlighted, highlighting)
+        return results
 
     def _format_sort_options(self, data, parameters):
         """
@@ -393,7 +424,6 @@ class DataHandler:
         """
         Given a dict of parameters, generates a URL
         """
-        print('generation', parameters)
         params = []
         for param, value in parameters.items():
             if not value: continue
