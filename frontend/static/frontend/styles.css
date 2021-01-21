@@ -120,6 +120,10 @@ ul ol {
   margin-bottom: 0;
 }
 
+em {
+  background-color: yellow;
+}
+
 dt {
   font-weight: 700;
 }
