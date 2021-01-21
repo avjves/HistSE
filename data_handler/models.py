@@ -99,7 +99,6 @@ class DataHandler:
         formats it in the way the client asked.
         """
         parameters = self._extract_request_parameters(request)
-        print("Extracted parameters", parameters)
         data = self._fetch_data(parameters)
         formatted_data = self._format_data(data, parameters, request)
         urls = self._generate_site_urls(formatted_data, parameters, request)
@@ -224,14 +223,11 @@ class DataHandler:
         """
         Replaces the necessary parts of results with the highlighted data.
         """
-        print("hig", highlighting_data)
         for result_i, result in enumerate(results):
-            print(result)
             result_id = ids[result_i]
             highlights = highlighting_data[result_id]
             for key, value in highlights.items():
                 for highlighting in value:
-                    print(key, highlighting)
                     non_highlighted = highlighting.replace("<em>", "").replace("</em>", "")
                     for res_i, res in enumerate(result):
                         if res[1] == key:
@@ -293,7 +289,6 @@ class DataHandler:
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
         urls['search_type'] = self._generate_site_urls_change_search_type(current_url_parameters, data)
         urls['result_type'] = self._generate_site_urls_change_result_type(current_url_parameters, data)
-        print('urls', urls)
         return urls
 
 
@@ -348,7 +343,6 @@ class DataHandler:
         Generates the URLS for any facet links.
         Generates a list where the index matches the facet list data['facets']
         """
-        print(data['facets'])
         facet_urls = []
         for facet in data['facets']:
             single_facet_urls=[]
@@ -358,9 +352,7 @@ class DataHandler:
                         facet_params = dict(current_url_parameters)
                         facet_params['fq'] = json.loads(facet_params['fq'][0])
                         for i in range(0, len(facet_params['fq'])):
-                            # print("fac", facet_params['fq'][i].split(":", 1), facet['field'])
                             if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
-                                print("!asd", facet_params['fq'].pop(i))
                                 break
                         single_facet_urls.append(self._generate_site_url(facet_params))
                     else: # Not selected option = URL doesn't really matter as it isn't show anyways
