@@ -5,6 +5,7 @@ Rather than asking for the necessary data from indexed search engine (Solr), it 
 and asks a Interactor to fetch the data.
 """
 import json
+import html
 from operator import itemgetter
 
 from solr_interactor.models import SolrInteractor
@@ -14,13 +15,20 @@ available_hit_facets = [
         {'field': 'year', 'name': 'Year of apperance'},
         {'field': 'location', 'name': 'Location'},
         {'field': 'country', 'name': 'Country'},
+        # {'field': 'date', 'name': 'Date'},
 ]
 
 available_cluster_facets = [
+        # {'field': 'starting_title', 'name': 'Starting title'},
         {'field': 'starting_country', 'name': 'Starting country'},
         {'field': 'starting_location', 'name': 'Starting location'},
         {'field': 'starting_year', 'name': 'Starting year of apperance'},
         {'field': 'crossed', 'name': 'Span across multiple countries'},
+        # {'field': 'count', 'name': 'Number of hits in cluster'},
+        {'field': 'out_city', 'name': 'Outgoing port city'},
+        {'field': 'out_country', 'name': 'Outgoing country'},
+        {'field': 'in_city', 'name': 'Incoming port city'},
+        {'field': 'in_country', 'name': 'Incoming country'},
         # {'field': 'title', 'name': 'Title'},
         ]
 
@@ -38,8 +46,18 @@ available_hit_sort_options = [
 ]
 
 available_cluster_sort_options = [
-        {'field': 'starting_title', 'name': 'Sort by title, ascending', 'direction': 'asc'},
-        {'field': 'starting_title', 'name': 'Sort by title, descending', 'direction': 'desc'},
+        {'field': 'starting_date', 'name': 'Sort by date, ascending', 'direction': 'asc'},
+        {'field': 'starting_date', 'name': 'Sort by date, descending', 'direction': 'desc'},
+        # {'field': 'starting_title', 'name': 'Sort by title, ascending', 'direction': 'asc'},
+        # {'field': 'starting_title', 'name': 'Sort by title, descending', 'direction': 'desc'},
+        {'field': 'starting_country', 'name': 'Sort by country, ascending', 'direction': 'asc'},
+        {'field': 'starting_country', 'name': 'Sort by country, descending', 'direction': 'desc'},
+        {'field': 'starting_location', 'name': 'Sort by location, ascending', 'direction': 'asc'},
+        {'field': 'starting_location', 'name': 'Sort by location, descending', 'direction': 'desc'},
+        {'field': 'starting_year', 'name': 'Sort by year, ascending', 'direction': 'asc'},
+        {'field': 'starting_year', 'name': 'Sort by year, descending', 'direction': 'desc'},
+        {'field': 'count', 'name': 'Sort by count, descending', 'direction': 'desc'},
+        {'field': 'count', 'name': 'Sort by count, ascending', 'direction': 'asc'},
 ]
 
 available_rows_per_page_options = [
@@ -263,7 +281,7 @@ class DataHandler:
 
     def _format_metadata(self, data, parameters, request):
         """
-
+        
         """
         results = []
         for result in data:
@@ -338,10 +356,10 @@ class DataHandler:
         for result in data['results']:
             for field in result: #field = [UI string, field name, value]
                 if field[1] == 'cluster_id': 
-                    url_params = dict(current_url_parameters)
-                    url_params['q'] = ''
-                    url_params['fq'] = ['{}:{}'.format("cluster_id", field[2])]
-                    urls.append(self._generate_site_url(url_params, search_type='cluster'))
+                    new_params = {}
+                    new_params['q'] = ''
+                    new_params['fq'] = ['{}:{}'.format("cluster_id", field[2])]
+                    urls.append(self._generate_site_url(new_params, search_type='cluster'))
         return urls
 
     def _generate_site_urls_facets(self, current_url_parameters, data):
@@ -384,17 +402,15 @@ class DataHandler:
         """
         Generates the URLs for previous and next page links
         """
+        prev_page_params = dict(current_url_parameters)
+        next_page_params = dict(current_url_parameters)
         start = int(current_url_parameters.get('start', 0))
         rows_per_page = int(current_url_parameters.get('rows', 10))
         prev_page = max(start-rows_per_page, 0)
-        prev_page_params = {}
-        prev_page_params.update(current_url_parameters)
         prev_page_params['start'] = prev_page
         prev_page_url = self._generate_site_url(prev_page_params)
         next_page = start+rows_per_page
         next_page = min(next_page, data['total_results']-1)
-        next_page_params = {}
-        next_page_params.update(current_url_parameters)
         next_page_params['start'] = next_page
         next_page_url = self._generate_site_url(next_page_params)
         return {'previous_page': prev_page_url, 'next_page': next_page_url}
@@ -407,7 +423,7 @@ class DataHandler:
         urls = []
         for sort_option in data['sort_options']:
             params = dict(current_url_parameters)
-            params['sort'] = "{} {}".format(sort_option['field'], sort_option['direction'])
+            params['sort'] = "{}_{}".format(sort_option['field'], sort_option['direction'])
             urls.append(self._generate_site_url(params))
         return urls
 
@@ -432,6 +448,10 @@ class DataHandler:
             if not value: continue
             if type(value) == list:
                 if param == 'fq':
+                    try:
+                        value = json.loads(value[0])
+                    except ValueError:
+                        pass
                     value = json.dumps(value)
                 else:
                     value = value[0]

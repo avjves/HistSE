@@ -44,6 +44,8 @@ class SolrInteractor:
                     facet_field = '{}:"{}"'.format(field, value) 
                     new_facet_fields.append(facet_field)
                 parameter_value = new_facet_fields
+            if parameter_key == 'sort':
+                parameter_value = parameter_value.replace("_asc", " asc").replace("_desc", " desc")
 
             new_parameters[parameter_key] = parameter_value
         return new_parameters
