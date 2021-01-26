@@ -18,6 +18,8 @@ available_hit_facets = [
         # {'field': 'date', 'name': 'Date'},
 ]
 
+skipped_metadata_fields = {'first_text'}
+
 available_cluster_facets = [
         # {'field': 'starting_title', 'name': 'Starting title'},
         {'field': 'starting_country', 'name': 'Starting country'},
@@ -88,7 +90,6 @@ cluster_field_mapping = {
         'timespan': 'Timespan',
         'locations': 'Locations',
         'average_length': 'Average length',
-        'starting_text': 'Starting Text',
         'starting_title': 'Title',
         'starting_date': 'Date',
         'starting_country': 'Country',
@@ -106,8 +107,9 @@ hit_field_mapping.update(cluster_field_mapping)
 
 class DataHandler:
 
-    def __init__(self, search_type):
+    def __init__(self, search_type, result_type):
         self.search_type = search_type
+        self.result_type = result_type
         self.hit_interactor = SolrInteractor(core='swe_v2')
         self.cluster_interactor = SolrInteractor(core='swe_v2_clusters')
 
@@ -139,17 +141,22 @@ class DataHandler:
                 'facet.field': [facet['field'] for facet in available_hit_facets],
         }
         if  self.search_type == 'hits':
-            return {'hits': default_params}
+            params = dict(default_params)
+            params['sort'] = params['sort'] if params['sort'] else 'date asc'
+            return {'hits': params}
         elif self.search_type ==  'clusters':
             cluster_params = default_params
             cluster_params['hl.fl'] = 'first_text'
             cluster_params['facet.field'] = [facet['field'] for facet in available_cluster_facets]
+            cluster_params['sort'] = cluster_params['sort'] if cluster_params['sort'] else 'starting_date asc'
             return {'hits': cluster_params}
         elif self.search_type ==  'cluster':
             default_params['q'] = '*:*' if not default_params['q'] else default_params['q']
+            default_params['sort'] = default_params['sort'] if default_params['sort'] else 'date asc'
             cluster_params = {}
             cluster_params['q'] = '*:*'
             cluster_params['fq'] = [fq for fq in default_params['fq'] if fq.split(":")[0] == 'cluster_id']
+            print(default_params)
             print(cluster_params)
             params = {
                 'hits': default_params,
@@ -238,6 +245,7 @@ class DataHandler:
             'start_num_pagination': parameters['start'] + 1,
             'end_num_pagination': parameters['start'] + parameters['rows'],
             'search_type': self.search_type,
+            'result_type': self.result_type,
         }
         return formatted_data
 
@@ -287,7 +295,7 @@ class DataHandler:
         for result in data:
             fields = list(result.keys())
             fields.sort()
-            values = [(cluster_field_mapping[field], field, result[field]) for field in fields if field in cluster_field_mapping]
+            values = [(cluster_field_mapping[field], field, result[field]) for field in fields if field in cluster_field_mapping and field not in skipped_metadata_fields]
             results.append(values)
 
         formatted_data = {
