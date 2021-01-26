@@ -12,7 +12,7 @@ from solr_interactor.models import SolrInteractor
 
 available_hit_facets = [
         {'field': 'title', 'name': 'Title'},
-        {'field': 'year', 'name': 'Year of apperance'},
+        {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector'},
         {'field': 'location', 'name': 'Location'},
         {'field': 'country', 'name': 'Country'},
         # {'field': 'date', 'name': 'Date'},
@@ -194,15 +194,53 @@ class DataHandler:
                 selected_facets[key] = value.strip('"')
         
         for facet in available_facets:
-            data_facets = data.facets['facet_fields'][facet['field']]
-            facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
-            facet_selected = False
-            if facet['field'] in selected_facets:
-                facet_options = [facet_option for facet_option in facet_options if facet_option['name'] == selected_facets[facet['field']]]
-                facet_options[0]['selected'] = True
-                facet_selected = True
-            facets.append({'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected})
+            facet_type = facet.get('facet_type', 'entry_per_value')
+            if facet_type == 'entry_per_value':
+                facet_option = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
+                facets.append(facet_option)
+            elif facet_type == 'range_selector':
+                # facet_option = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
+                facet_option = self._format_facets_range_limit(data, parameters, facet, selected_facets)
+                facets.append(facet_option)
         return facets
+
+    def _format_facets_entry_per_value(self, data, parameters, facet, selected_facets):
+        """
+        In place additions
+        """
+        data_facets = data.facets['facet_fields'][facet['field']]
+        facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
+        facet_selected = False
+        if facet['field'] in selected_facets:
+            facet_options = [facet_option for facet_option in facet_options if facet_option['name'] == selected_facets[facet['field']]]
+            facet_options[0]['selected'] = True
+            facet_selected = True
+        return {'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected, 'facet_type': facet.get('facet_type', 'entry_per_value')}
+
+    def _format_facets_range_limit(self, data, parameters, facet, selected_facets):
+        """
+        Range limited facets
+        Attemps to create some values that can be charted and shown to user.
+        """
+        entry_facet = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
+        data_facets = data.facets['facet_fields'][facet['field']]
+        facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
+        facet_values = []
+        for i in range(0, len(data_facets), 2):
+            if data_facets[i+1] < 1: continue
+            facet_values.append([int(data_facets[i]), int(data_facets[i+1])])
+        facet_values.sort(key=itemgetter(0))
+        min_value = facet_values[0][0]
+        max_value = facet_values[-1][0]
+        facet_labels = [v[0] for v in facet_values]
+        facet_values = [v[1] for v in facet_values]
+        charter = Charter()
+        data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=5)
+        entry_facet['min_value'] = min_value
+        entry_facet['max_value'] = max_value
+        entry_facet['data_labels'] = data_labels
+        entry_facet['data_values'] = data_values
+        return entry_facet
 
     def _format_data(self, data, parameters, request):
         """
@@ -509,3 +547,35 @@ class Charter:
                     name = '# of clusters per year'
                 break
         return labels, values, name
+
+    def chart_bucket_range(self, labels, data, bucket_size):
+        """
+        Generates data for a chart with bucketed data / labels. 
+        Buckets are formed from the labels.
+        Assumes labels and data are both sorted timewise AND that their indexes match.
+        """
+        min_key = labels[0]
+        max_key = labels[-1]
+        bucket_indexes = [(i, i+bucket_size) for i in range(min_key, max_key, bucket_size)]
+        buckets = [[] for _ in bucket_indexes]
+        cur_bi = 0
+        for i in range(0, len(labels)):
+            while True:
+                if labels[i] <= bucket_indexes[cur_bi][1]:
+                    buckets[cur_bi].append([labels[i], data[i]])
+                    break
+                else:
+                    print(labels[i], bucket_indexes[cur_bi])
+                    cur_bi += 1
+                    continue
+        
+        # print(buckets)
+        # for bi, bucket in enumerate(buckets):
+            # print(bucket_indexes[bi])
+            # print(bucket)
+        new_labels, new_data = [], []
+        for bucket_i, bucket in enumerate(buckets):
+            for i in range(0, bucket_size):
+                new_labels.append("{} - {}".format(bucket_indexes[bucket_i][0], bucket_indexes[bucket_i][1]))
+                new_data.append(sum([v[1] for v in bucket]))
+        return new_labels, new_data

@@ -1,0 +1,36 @@
+<div class="row ml-1 mr-1 justify-content-around">
+	<div class="input-group">
+		<input type="number" class="form-control" value="{{ facet.min_value }}" aria-label="starting_year" aria-describedby="basic-addon1">
+		<i class="ml-1 pt-2 pb-3 mr-1 fas fa-arrows-alt-h" style="padding-top: 0.70rem !important;"></i>
+		<input type="number" class="form-control" value="{{ facet.max_value }}" aria-label="ending_year" aria-describedby="basic-addon1">
+		<button class="btn btn-primary ml-1 mb-1">Limit</limit>
+	</div>
+</div>
+<div class="col">
+	<canvas id="{{ facet.field }}_selector" />
+
+	<script>
+		function x() {
+			console.log("WDWA");
+		}
+		var ctx = document.getElementById('{{ facet.field }}_selector').getContext('2d');		
+		var {{ facet.field }}_selector = new Chart(ctx, {
+	    		type: 'line',
+			data: {
+				labels: {{ facet.data_labels|safe }},
+				datasets: [{
+					label: 'Year range',
+					backgroundColor: 'rgb(200, 0, 0, 0.5)',
+					pointRadius: 2,
+					pointStyle: 'rect',
+					data: {{ facet.data_values|safe }},
+					options: {
+						onClick: x,
+					},
+
+				}]
+			}
+	    		//options: options
+		});
+	</script>
+</div>

@@ -9,21 +9,11 @@
 		<h6 class="m-0 font-weight-bold text-primary">{{facet.name}}</h6>
 	</div>
 	<div class="collapse card body p-2 {% if facet.has_selection %} show {% endif %}" id="{{facet.field}}Collapse">
-		{% for facet_option in facet.options %}
-		<div class="d-flex">
-			{% if facet_option.selected %}
-			{#<button class="btn" onclick="setNewFacet('{{facet.field}}', '')">#}
-				<a class="btn" role="button" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}">
-					<i class="fas fa-times fa-sm"></i>
-				</a>
-				<a href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.name }}</a>
-				<span class="ml-auto"> {{facet_option.value }} </span>
-			{% else %}
-				<a class="mr-auto" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.name }}</a>
-				<span class="justify-content-end"> {{facet_option.value }} </span>
-			{% endif %}
-		</div>
-		{% endfor %}
+		{% if facet.facet_type == 'entry_per_value' %}
+			{% include "frontend/partials/facets/entry_per_value.html" with facet=facet %}
+		{% elif facet.facet_type == 'range_selector' %}
+			{% include "frontend/partials/facets/range_selector.html" with facet=facet %}
+		{% endif %}
 	</div>
 
 </div>
