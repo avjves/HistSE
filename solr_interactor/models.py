@@ -40,10 +40,13 @@ class SolrInteractor:
                 new_facet_fields = []
                 for facet_field in parameter_value:
                     field, value = facet_field.split(":", 1)
+                    if value.startswith("["): # We don't add extra "s if it's a range selector.
+                        new_facet_fields.append(facet_field)
+                        continue
                     value = value.replace("'", '"')
                     facet_field = '{}:"{}"'.format(field, value) 
                     new_facet_fields.append(facet_field)
-                parameter_value = new_facet_fields
+                parameter_value = " AND ".join(new_facet_fields)
             if parameter_key == 'sort':
                 parameter_value = parameter_value.replace("_asc", " asc").replace("_desc", " desc")
 

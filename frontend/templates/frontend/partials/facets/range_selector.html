@@ -1,36 +1,94 @@
 <div class="row ml-1 mr-1 justify-content-around">
+	<span> Current selection! </span>
 	<div class="input-group">
-		<input type="number" class="form-control" value="{{ facet.min_value }}" aria-label="starting_year" aria-describedby="basic-addon1">
+		<input id="{{facet.field}}_start_value" type="number" class="form-control" value="{{ facet.min_value }}" aria-label="starting_year" aria-describedby="basic-addon1">
 		<i class="ml-1 pt-2 pb-3 mr-1 fas fa-arrows-alt-h" style="padding-top: 0.70rem !important;"></i>
-		<input type="number" class="form-control" value="{{ facet.max_value }}" aria-label="ending_year" aria-describedby="basic-addon1">
-		<button class="btn btn-primary ml-1 mb-1">Limit</limit>
+		<input id="{{facet.field}}_end_value" type="number" class="form-control" value="{{ facet.max_value }}" aria-label="ending_year" aria-describedby="basic-addon1">
+		<button onclick="limitSearches()" class="btn btn-primary ml-1 mb-1">Limit</limit>
 	</div>
 </div>
 <div class="col">
 	<canvas id="{{ facet.field }}_selector" />
-
 	<script>
-		function x() {
-			console.log("WDWA");
+		function changeLimitValues(ev, it, dat) {
+			var label = it[0]._model.label
+			var splits = label.split("-")
+			document.getElementById("{{ facet.field }}_start_value").value = splits[0].substring(0, splits[0].length-1);
+			document.getElementById("{{ facet.field }}_end_value").value = splits[1].substring(1, splits[1].length);
 		}
+
+		function limitSearches() {
+			var startValue = document.getElementById("{{ facet.field }}_start_value").value
+			var endValue = document.getElementById("{{ facet.field }}_end_value").value
+			var urlParams = new URLSearchParams(window.location.search);
+			var fq = urlParams.get('fq')
+			var fqJson = '';
+			if(fq == null) {
+				fqJson = [];
+			}
+			else {
+				var fqJson = JSON.parse(fq);
+			}
+			matchFound = false;
+			for(var i = 0; i < fqJson.length; i++) {
+				if(fqJson[i].split(":")[0] == '{{ facet.field }}') {
+					matchFound = true;
+					fqJson[i] = "{{ facet.field }}:[" + startValue + " TO " + endValue + "]";
+				}
+			}
+			if(!matchFound) {
+					fqJson.push("{{ facet.field }}:[" + startValue + " TO " + endValue + "]");
+			}
+			urlParams.set('fq', JSON.stringify(fqJson));
+			var p = '';
+			for(const paramKey of urlParams.keys()) {
+				p += paramKey + "=" + urlParams.get(paramKey) + "&";
+			}
+			p = p.substring(0, p.length-1); // Removes the last and symbol
+			var newUrl = window.location.href.split("?")[0] + "?" + p;
+			window.location = newUrl;
+		}
+
 		var ctx = document.getElementById('{{ facet.field }}_selector').getContext('2d');		
 		var {{ facet.field }}_selector = new Chart(ctx, {
-	    		type: 'line',
+	    		type: 'bar',
+			options: {
+				scales: {
+					yAxes: [{
+						display: false
+					}],
+					xAxes: [{
+						ticks: {
+							fontSize:15,
+							maxRotation: 0,
+							//minRotation: 0,
+							callback: function(value, index, values) {
+								if(values.length <= 5) {
+									return value;
+								}
+								else {
+									if(index == 0 || index == values.length-1) {
+										return value.split(" -")[0];
+									}
+									return "";
+								}
+							}
+						}
+					}]
+				},
+				onClick: changeLimitValues
+
+			},
 			data: {
 				labels: {{ facet.data_labels|safe }},
 				datasets: [{
 					label: 'Year range',
-					backgroundColor: 'rgb(200, 0, 0, 0.5)',
-					pointRadius: 2,
+					backgroundColor: 'rgb(0, 0, 200, 0.5)',
+					pointRadius: 0,
 					pointStyle: 'rect',
 					data: {{ facet.data_values|safe }},
-					options: {
-						onClick: x,
-					},
-
 				}]
 			}
-	    		//options: options
 		});
 	</script>
 </div>

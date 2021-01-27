@@ -1,7 +1,8 @@
 {% load template_methods %}
 
+<div id="{{ facet.field }}_values">
 {% for facet_option in facet.options %}
-	<div class="d-flex">
+	<div class="d-flex {{facet.field}}_value">
 		{% if facet_option.selected %}
 			<a class="btn" role="button" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}">
 				<i class="fas fa-times fa-sm"></i>
@@ -14,3 +15,55 @@
 		{% endif %}
 	</div>
 {% endfor %}
+</div>
+{% if facet.options|length > 10 %}
+<hr />
+<div class="row d-flex justify-content-between ml-2 mr-2 ">
+	<span class="small mt-1 mb-2" id="{{ facet.field }}_info"></span>
+	<div>
+		<div class="btn btn-primary" onClick="limitShownEntries_{{ facet.field }}(-1)">
+			<i class="fas fa-angle-left fa-sm"></i>
+		</div>
+		<div class="btn btn-primary" onClick="limitShownEntries_{{ facet.field }}(1)">
+			<i class="fas fa-angle-right fa-sm"></i>
+		</div>
+	</div>
+
+</div>
+{% endif %}
+	<script>
+		function limitShownEntries_{{ facet.field }}(addition) {
+			var titlesPerPage = 10;
+			var childNodes = document.getElementById('{{ facet.field }}_values').childNodes;
+			if(addition != undefined) {
+				var toBeTitles = (current_{{ facet.field }}_page + addition) * titlesPerPage;
+				if(toBeTitles >= 0 && toBeTitles < {{ facet.options|length }}) {
+					current_{{ facet.field }}_page += addition;
+				}
+				else {
+					console.log(toBeTitles, titlesPerPage, current_{{ facet.field }}_page);
+				}
+			}
+			var start = titlesPerPage * current_{{ facet.field }}_page;
+			var end = start + titlesPerPage;
+			var cur = -1;
+			for(var i = 0; i < childNodes.length; i++) {
+				if(childNodes[i].className && childNodes[i].className.includes("{{ facet.field }}_value")) {
+					cur += 1;
+					if(cur >= start && cur < end) {
+						{% comment %}childNodes[i].style.display = 'inline !important';{% endcomment %}
+						childNodes[i].setAttribute('style', 'display: block !important');
+					}
+					else {
+						{% comment %}childNodes[i].style.display = 'none !important';{% endcomment %}
+						childNodes[i].setAttribute('style', 'display: none !important');
+					}
+				}
+			}
+			{% if facet.options|length > 10 %}
+				document.getElementById("{{ facet.field }}_info").innerHTML = "Showing " + (start+1) + "-" + end + " out of " + cur + " options";
+			{% endif %}
+		}
+		var current_{{ facet.field }}_page = 0;
+		limitShownEntries_{{ facet.field }}();	
+	</script>

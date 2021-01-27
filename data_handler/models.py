@@ -128,6 +128,7 @@ class DataHandler:
     def _extract_request_parameters(self, request):
         """
         Extracts the HTTP GET request parameters from the request object and returns them as a dictionary.
+        Also sets any default parameters that should be passed to Solr.
         """
         default_params = {
                 'q': request.GET.get('q') if request.GET.get('q') else '',
@@ -139,6 +140,7 @@ class DataHandler:
                 'hl.fl': 'text',
                 'facet': 'true',
                 'facet.field': [facet['field'] for facet in available_hit_facets],
+                'facet.limit': -1,
         }
         if  self.search_type == 'hits':
             params = dict(default_params)
@@ -156,8 +158,6 @@ class DataHandler:
             cluster_params = {}
             cluster_params['q'] = '*:*'
             cluster_params['fq'] = [fq for fq in default_params['fq'] if fq.split(":")[0] == 'cluster_id']
-            print(default_params)
-            print(cluster_params)
             params = {
                 'hits': default_params,
                 'metadata': cluster_params,
@@ -199,7 +199,6 @@ class DataHandler:
                 facet_option = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
                 facets.append(facet_option)
             elif facet_type == 'range_selector':
-                # facet_option = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
                 facet_option = self._format_facets_range_limit(data, parameters, facet, selected_facets)
                 facets.append(facet_option)
         return facets
@@ -208,21 +207,32 @@ class DataHandler:
         """
         In place additions
         """
-        data_facets = data.facets['facet_fields'][facet['field']]
-        facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
+        facet_options = self._format_facets_default(data, parameters, facet)
         facet_selected = False
         if facet['field'] in selected_facets:
             facet_options = [facet_option for facet_option in facet_options if facet_option['name'] == selected_facets[facet['field']]]
             facet_options[0]['selected'] = True
             facet_selected = True
-        return {'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected, 'facet_type': facet.get('facet_type', 'entry_per_value')}
+        facet_options.sort(key=itemgetter('value'), reverse=True)
+        return {'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected, 'facet_type': 'entry_per_value'}
+
+
+    def _format_facets_default(self, data, parameters, facet):
+        """
+        Generates the default facet value options so that stuff like chart works even if they are not used to populate
+        the facet window.
+        """
+        data_facets = data.facets['facet_fields'][facet['field']]
+        facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
+        return facet_options
+
 
     def _format_facets_range_limit(self, data, parameters, facet, selected_facets):
         """
         Range limited facets
         Attemps to create some values that can be charted and shown to user.
         """
-        entry_facet = self._format_facets_entry_per_value(data, parameters, facet, selected_facets)
+        entry_facet = {'field': facet['field'], 'name': facet['name'], 'facet_type': 'range_selector', 'has_selection': False, 'options': self._format_facets_default(data, parameters, facet)}
         data_facets = data.facets['facet_fields'][facet['field']]
         facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
         facet_values = []
@@ -230,12 +240,14 @@ class DataHandler:
             if data_facets[i+1] < 1: continue
             facet_values.append([int(data_facets[i]), int(data_facets[i+1])])
         facet_values.sort(key=itemgetter(0))
+        if not facet_values:
+            return entry_facet
         min_value = facet_values[0][0]
         max_value = facet_values[-1][0]
         facet_labels = [v[0] for v in facet_values]
         facet_values = [v[1] for v in facet_values]
         charter = Charter()
-        data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=5)
+        data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=10)
         entry_facet['min_value'] = min_value
         entry_facet['max_value'] = max_value
         entry_facet['data_labels'] = data_labels
@@ -269,7 +281,6 @@ class DataHandler:
         parameters.update({
         })
         site_parameters = {k: v for k, v in parameters.items() if v != None and v != []}
-        # import pdb;pdb.set_trace()
         formatted_data = {
             'results': self._add_highlighting(results, ids, data),
             'facets': self._format_facets(data, parameters),
@@ -323,8 +334,6 @@ class DataHandler:
         return available_rows_per_page_options
 
 
-
-
     def _format_metadata(self, data, parameters, request):
         """
         
@@ -335,7 +344,6 @@ class DataHandler:
             fields.sort()
             values = [(cluster_field_mapping[field], field, result[field]) for field in fields if field in cluster_field_mapping and field not in skipped_metadata_fields]
             results.append(values)
-
         formatted_data = {
             'show_metadata': True,
             'cluster_metadata': results[0],
@@ -556,6 +564,8 @@ class Charter:
         """
         min_key = labels[0]
         max_key = labels[-1]
+        if min_key == max_key: # No need to bucket stuff when we only have one year in data.
+            return ["{} - {}".format(min_key, max_key)], [sum(data)]
         bucket_indexes = [(i, i+bucket_size) for i in range(min_key, max_key, bucket_size)]
         buckets = [[] for _ in bucket_indexes]
         cur_bi = 0
@@ -565,17 +575,11 @@ class Charter:
                     buckets[cur_bi].append([labels[i], data[i]])
                     break
                 else:
-                    print(labels[i], bucket_indexes[cur_bi])
                     cur_bi += 1
                     continue
-        
-        # print(buckets)
-        # for bi, bucket in enumerate(buckets):
-            # print(bucket_indexes[bi])
-            # print(bucket)
+
         new_labels, new_data = [], []
         for bucket_i, bucket in enumerate(buckets):
-            for i in range(0, bucket_size):
-                new_labels.append("{} - {}".format(bucket_indexes[bucket_i][0], bucket_indexes[bucket_i][1]))
-                new_data.append(sum([v[1] for v in bucket]))
+            new_labels.append("{} - {}".format(bucket_indexes[bucket_i][0], bucket_indexes[bucket_i][1]))
+            new_data.append(sum([v[1] for v in bucket]))
         return new_labels, new_data
