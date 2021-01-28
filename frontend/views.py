@@ -1,5 +1,10 @@
+import csv
+
 from django.shortcuts import render
-from data_handler.models import DataHandler, Charter
+from django.http import HttpResponse
+
+from data_handler.models import DataHandler, Charter, Mapper
+
 
 
 def index(request):
@@ -21,3 +26,21 @@ def chart(request, search_type):
     labels, values, name = charter.chart(data)
     data.update({'chart_labels': list(labels), 'chart_values': list(values), 'chart_name': name})
     return render(request, 'frontend/chart.html', context=data)
+
+
+def map(request, search_type, flow_type):
+    data_handler = DataHandler(search_type, 'map')
+    data = data_handler.fetch_request_data(request)
+    return render(request, 'frontend/map.html', context=data)
+
+def map_data(request, search_type, flow_type, data_type):
+    data_handler = DataHandler(search_type, 'map')
+    data = data_handler.fetch_all_data(request, fields=['date, location'])
+    mapper = Mapper(flow_type, data_type)
+    csv_data = mapper.format_map_data(data)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(data_type)
+    writer = csv.writer(response)
+    writer.writerows(csv_data)
+    return response
+

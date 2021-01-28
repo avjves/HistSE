@@ -18,11 +18,18 @@
 			</div>
 
 
-			<div class="mr-5 pt-1 pb-1">
+			<div class="mr-1 pt-1 pb-1">
 				<a class="btn btn-primary {% if result_type == 'charts' %} disabled {% endif %}" role="button" href="{{ urls.result_type.charts }}">
 					<i class="p-1 fal fa-chart-bar"></i>
 				</a>
 			</div>
+
+			<div class="mr-5 pt-1 pb-1">
+				<a class="btn btn-primary {% if result_type == 'map' %} disabled {% endif %}" role="button" href="{{ urls.result_type.map }}">
+					<i class="p-1 fa fa-map-marker-alt"></i>
+				</a>
+			</div>
+
 
 			<div class="dropdown mr-1 pt-1 pb-1">
 				<button class="btn btn-primary dropdown-toggle" type="button" id="sortDirectionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

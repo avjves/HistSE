@@ -7,6 +7,9 @@ and asks a Interactor to fetch the data.
 import json
 import html
 from operator import itemgetter
+from geopy import geocoders
+
+from django.conf import settings
 
 from solr_interactor.models import SolrInteractor
 
@@ -124,6 +127,34 @@ class DataHandler:
         urls = self._generate_site_urls(formatted_data, parameters, request)
         formatted_data.update({'urls': urls})
         return formatted_data
+
+    def fetch_all_data(self, request, fields):
+        """
+        Fetches _all_ the data with the given parameters.
+        Does not generate facets or URLs.
+        """
+        parameters = self._extract_request_parameters(request)
+        parameters['hits']['facet'] = 'false'
+        parameters['hits']['hl'] = 'false'
+        parameters['hits']['start'] = 0
+        parameters['hits']['rows'] = 1000
+        parameters['hits']['fl'] = ",".join(fields)
+        total_results = 0
+        all_data = {}
+        while True:
+            data = self._fetch_data(parameters)['hits']
+            parameters['hits']['start'] = parameters['hits']['start'] + parameters['hits']['rows']
+            total_results = data.raw_response['response']['numFound']
+            found_results = 0
+            for result in data:
+                found_results += 1
+                fields = list(result.keys())
+                for field in fields:
+                    all_data[field] = all_data.get(field, [])
+                    all_data[field].append(result[field])
+            if not found_results:
+                break
+        return all_data
 
     def _extract_request_parameters(self, request):
         """
@@ -367,6 +398,7 @@ class DataHandler:
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
         urls['search_type'] = self._generate_site_urls_change_search_type(current_url_parameters, data)
         urls['result_type'] = self._generate_site_urls_change_result_type(current_url_parameters, data)
+        urls['flowmap'] = self._generate_site_urls_flowmap(current_url_parameters, data)
         return urls
 
 
@@ -398,7 +430,8 @@ class DataHandler:
         """
         clusters_url = self._generate_site_url(current_url_parameters, result_type='search')
         charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
-        return {'clusters': clusters_url, 'charts': charts_url}
+        map_url = self._generate_site_url(current_url_parameters, result_type='origin/map')
+        return {'clusters': clusters_url, 'charts': charts_url, 'map': map_url}
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -492,6 +525,16 @@ class DataHandler:
             urls.append(self._generate_site_url(params))
         return urls
 
+    def _generate_site_urls_flowmap(self, current_url_parameters, data):
+        current_domain = settings.DOMAIN
+        url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
+        loc_url = url.replace("/origin/map", "/origin/locations/map")
+        flows_url = url.replace("/origin/map", "/origin/flows/map")
+        flow_url = "http://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
+        return {'flow_map': flow_url}
+        
+
+
 
     def _generate_site_url(self, parameters, search_type=None, result_type=None):
         """
@@ -583,3 +626,60 @@ class Charter:
             new_labels.append("{} - {}".format(bucket_indexes[bucket_i][0], bucket_indexes[bucket_i][1]))
             new_data.append(sum([v[1] for v in bucket]))
         return new_labels, new_data
+
+
+class Mapper:
+    def __init__(self, flow_type, data_type):
+        self.gn = geocoders.GeoNames('avjves')
+        self.flow_type = flow_type
+        self.data_type = data_type
+
+    def format_map_data(self, data):
+        if self.data_type == 'flows':
+            return self._format_map_data_flows(data)
+        elif self.data_type == 'locations':
+            return self._format_map_data_locations(data)
+        else:
+            raise NotImplementedError
+
+
+    def _format_map_data_flows(self, data):
+        csv_data = [['origin', 'dest', 'count']]
+        dates = data['date']
+        locations = data['location']
+        dates, locations = [list(a) for a in zip(*sorted(zip(dates, locations)))]
+        if self.flow_type == 'origin':
+            counts = {}
+            orig_date, orig_loc = dates.pop(0), locations.pop(0)
+            for date, location in zip(dates, locations):
+                counts[location] = counts.get(location, 0) + 1
+            for key, value in counts.items():
+                csv_data.append([orig_loc, key, value])
+            return csv_data
+        else:
+            raise NotImplementedError
+         
+
+    def _format_map_data_locations(self, data):
+        csv_data = [['id', 'name', 'lat', 'lon']]
+        dates = data['date']
+        locations = data['location']
+        dates, locations = [list(a) for a in zip(*sorted(zip(dates, locations)))]
+        if self.flow_type == 'origin':
+            date = dates.pop(0)
+            location = locations.pop(0)
+            lat, lng = self._get_location_coordinates(location)
+            csv_data.append([location, location, lat, lng])
+            found_locations = set(location)
+            for (date, location) in zip(dates, locations):
+                if location not in found_locations:
+                    found_locations.add(location)
+                    lat, lng = self._get_location_coordinates(location)
+                    csv_data.append([location, location, lat, lng])
+            return csv_data
+        else:
+            raise NotImplementedError
+
+    def _get_location_coordinates(self, location_name):
+        loc = self.gn.geocode(location_name)
+        return loc.latitude, loc.longitude

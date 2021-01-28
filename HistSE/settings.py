@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["195.148.22.3", "localhost"]
 
+DOMAIN = "http://localhost:5000"
+
 
 # Application definition
 
@@ -39,10 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'frontend',
     'solr_interactor',
-    'data_handler'
+    'data_handler',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +73,8 @@ TEMPLATES = [
         },
     },
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 WSGI_APPLICATION = 'HistSE.wsgi.application'
 
