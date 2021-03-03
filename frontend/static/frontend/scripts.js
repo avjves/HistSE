@@ -31,7 +31,8 @@ function search() {
 	if(getParams.length == 0) {
 		var handler = currentUrl.split("/");
 		handler = handler[handler.length-1];
-		var okHandles = ['search', 'charts'];
+		//var okHandles = ['search', 'charts'];
+		var okHandles = [];
 		if(okHandles.includes(handler)) {
 			handler = '';
 		}
@@ -42,7 +43,7 @@ function search() {
 		console.log(newUrl);
 	}
 	else {
-		newUrl = currentUrl.replace(getParams, newParams.join("&"));
+		newUrl = currentUrl.replace(getParams, newParams.join("&")).replace("/cluster/", "/hits/");
 	}
 	console.log(newUrl);
 	window.location = newUrl;
