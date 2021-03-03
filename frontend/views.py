@@ -14,6 +14,7 @@ def search(request, search_type):
     print("GET params:", request.GET)
     data_handler = DataHandler(search_type, 'search')
     data = data_handler.fetch_request_data(request)
+    print(data['urls']['facets'])
     data.update({'current_site': 'search'})
     # return render(request, 'frontend/search.html')
     return render(request, 'frontend/search.html', context=data)
@@ -35,7 +36,9 @@ def map(request, search_type, flow_type):
 
 def map_data(request, search_type, flow_type, data_type):
     data_handler = DataHandler(search_type, 'map')
-    data = data_handler.fetch_all_data(request, fields=['date, location'])
+    if search_type != 'cluster':
+        return HttpResponse(status=501)
+    data = data_handler.fetch_all_data(request, fields=['date, location, coordinates'])
     mapper = Mapper(flow_type, data_type)
     csv_data = mapper.format_map_data(data)
     response = HttpResponse(content_type='text/csv')
