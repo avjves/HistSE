@@ -15,7 +15,7 @@ from solr_interactor.models import SolrInteractor
 
 available_hit_facets = [
         {'field': 'title', 'name': 'Title'},
-        {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector'},
+        {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector', 'increment': 10},
         {'field': 'location', 'name': 'Location'},
         {'field': 'country', 'name': 'Country'},
         # {'field': 'date', 'name': 'Date'},
@@ -29,7 +29,7 @@ available_cluster_facets = [
         {'field': 'starting_location', 'name': 'Starting location'},
         {'field': 'starting_year', 'name': 'Starting year of apperance', 'facet_type': 'range_selector', 'increment': 10},
         {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}},
-        {'field': 'count', 'name': 'Number of hits in cluster', 'facet_type': 'range_selector', 'increment': 1},
+        # {'field': 'count', 'name': 'Number of hits in cluster', 'facet_type': 'range_selector', 'increment': 1},
         {'field': 'out_city', 'name': 'Port city'},
         {'field': 'out_country', 'name': 'Port country'},
         {'field': 'in_city', 'name': 'Incoming city'},
@@ -119,9 +119,10 @@ hit_field_mapping.update(cluster_field_mapping)
 
 class DataHandler:
 
-    def __init__(self, search_type, result_type):
+    def __init__(self, search_type, result_type, flow_type='origin'):
         self.search_type = search_type
         self.result_type = result_type
+        self.flow_type = flow_type
         self.hit_interactor = SolrInteractor(core='swe_v4')
         self.cluster_interactor = SolrInteractor(core='swe_v4_clusters')
 
@@ -293,6 +294,7 @@ class DataHandler:
         facet_labels = [v[0] for v in facet_values]
         facet_values = [v[1] for v in facet_values]
         charter = Charter()
+        print(facet)
         data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=facet['increment'])
         entry_facet['min_value'] = min_value
         entry_facet['max_value'] = max_value
@@ -344,6 +346,7 @@ class DataHandler:
             'end_num_pagination': parameters['start'] + parameters['rows'],
             'search_type': self.search_type,
             'result_type': self.result_type,
+            'flow_type': self.flow_type,
         }
         return formatted_data
 
@@ -448,8 +451,9 @@ class DataHandler:
         """
         clusters_url = self._generate_site_url(current_url_parameters, result_type='search')
         charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
-        map_url = self._generate_site_url(current_url_parameters, result_type='origin/map')
-        return {'clusters': clusters_url, 'charts': charts_url, 'map': map_url}
+        map_origin_url = self._generate_site_url(current_url_parameters, result_type='origin/map')
+        map_chain_url = self._generate_site_url(current_url_parameters, result_type='chain/map')
+        return {'clusters': clusters_url, 'charts': charts_url, 'map_origin': map_origin_url, 'map_chain': map_chain_url}
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -557,10 +561,12 @@ class DataHandler:
 
     def _generate_site_urls_flowmap(self, current_url_parameters, data):
         current_domain = settings.DOMAIN
-        url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
-        loc_url = url.replace("/origin/map", "/origin/locations/map")
-        flows_url = url.replace("/origin/map", "/origin/flows/map")
-        flow_url = "https://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
+        url = current_domain + self._generate_site_url(current_url_parameters, result_type='{}/map_data'.format(self.flow_type))
+        # url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
+        loc_url = url.replace("/map", "/locations/map")
+        flows_url = url.replace("/map", "/flows/map")
+        access_token = 'pk.eyJ1IjoiYXZqdmVzIiwiYSI6ImNrbHR4YmllYTBoZG4yb213cGNnbzZicHYifQ.vSaa0xMyKGztHbahyM6h2A'
+        flow_url = "https://flowmap.blue/from-url?flows={}&locations={}&mapbox.accessToken={}".format(flows_url, loc_url, access_token)
         return {'flow_map': flow_url}
         
 
@@ -688,6 +694,19 @@ class Mapper:
             for key, value in counts.items():
                 csv_data.append([orig_loc, key, value])
             return csv_data
+        elif self.flow_type == 'chain':
+            counts = {}
+            cur_date, cur_loc = dates.pop(0), locations.pop(0)
+            while dates:
+                new_date, new_loc = dates.pop(0), locations.pop(0)
+                loc_key = "{}|{}".format(cur_loc, new_loc)
+                counts[loc_key] = counts.get(loc_key, 0) + 1
+                cur_date = new_date
+                cur_loc = new_loc
+            for key, value in counts.items():
+                start, end = key.split("|")
+                csv_data.append([start, end, value])
+            return csv_data
         else:
             raise NotImplementedError
          
@@ -706,7 +725,7 @@ class Mapper:
             # lat, lng = self._get_location_coordinates(location)
             lng, lat = coordinate_pair
             csv_data.append([location, location, lat, lng])
-            found_locations = set(location)
+            found_locations = set([location])
             for (date, location, coordinate_pair) in zip(dates, locations, coordinates):
                 if location not in found_locations:
                     found_locations.add(location)
@@ -715,6 +734,14 @@ class Mapper:
                     lng, lat = coordinate_pair
                     if not lat: continue
                     csv_data.append([location, location, lat, lng])
+            return csv_data
+        elif self.flow_type == 'chain':
+            found_locations = set()
+            for (date, location, coordinate_pair) in zip(dates, locations, coordinates):
+                    if location not in found_locations:
+                        found_locations.add(location)
+                        lng, lat = coordinate_pair
+                        csv_data.append([location, location, lat, lng])
             return csv_data
         else:
             raise NotImplementedError

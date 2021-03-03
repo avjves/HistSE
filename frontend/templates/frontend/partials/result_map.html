@@ -1,4 +1,10 @@
 {% load template_methods %}
+<div class="card shadow p-2">
+	<div class"card body">
+		<a class="btn btn-primary {% if flow_type == 'origin' %} disabled {% endif %}" href="{{urls.result_type.map_origin}}">Origin to rest hits</a>
+		<a class="btn btn-primary {% if flow_type == 'chain' %} disabled {% endif %}" href="{{urls.result_type.map_chain}}">Chain hits together</a>
+	</div>
+</div>
 <div class="card shadow mb-4 p-2">
 	<div class"card body">
 		{% if search_type == 'cluster' %}

@@ -30,7 +30,7 @@ def chart(request, search_type):
 
 
 def map(request, search_type, flow_type):
-    data_handler = DataHandler(search_type, 'map')
+    data_handler = DataHandler(search_type, 'map', flow_type)
     data = data_handler.fetch_request_data(request)
     return render(request, 'frontend/map.html', context=data)
 
