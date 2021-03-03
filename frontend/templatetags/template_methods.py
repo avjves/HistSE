@@ -13,6 +13,10 @@ def get_index(l, index):
     return l[index-1]
 
 @register.filter
+def prettify_date(date_string):
+    return date_string.split("T")[0]
+
+@register.filter
 def show_em(data, key):
     if key == 'text' or key == 'first_text':
         splits = data.split("<em>")

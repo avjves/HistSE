@@ -27,12 +27,12 @@ available_cluster_facets = [
         # {'field': 'starting_title', 'name': 'Starting title'},
         {'field': 'starting_country', 'name': 'Starting country'},
         {'field': 'starting_location', 'name': 'Starting location'},
-        {'field': 'starting_year', 'name': 'Starting year of apperance'},
-        {'field': 'crossed', 'name': 'Span across multiple countries'},
-        # {'field': 'count', 'name': 'Number of hits in cluster'},
-        {'field': 'out_city', 'name': 'Outgoing port city'},
-        {'field': 'out_country', 'name': 'Outgoing country'},
-        {'field': 'in_city', 'name': 'Incoming port city'},
+        {'field': 'starting_year', 'name': 'Starting year of apperance', 'facet_type': 'range_selector', 'increment': 10},
+        {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}},
+        {'field': 'count', 'name': 'Number of hits in cluster', 'facet_type': 'range_selector', 'increment': 1},
+        {'field': 'out_city', 'name': 'Port city'},
+        {'field': 'out_country', 'name': 'Port country'},
+        {'field': 'in_city', 'name': 'Incoming city'},
         {'field': 'in_country', 'name': 'Incoming country'},
         # {'field': 'title', 'name': 'Title'},
         ]
@@ -51,18 +51,26 @@ available_hit_sort_options = [
 ]
 
 available_cluster_sort_options = [
-        {'field': 'starting_date', 'name': 'Sort by date, ascending', 'direction': 'asc'},
-        {'field': 'starting_date', 'name': 'Sort by date, descending', 'direction': 'desc'},
+        {'field': 'average_length', 'name': 'Sort by average length, ascending', 'direction': 'asc'},
+        {'field': 'average_length', 'name': 'Sort by average length, descending', 'direction': 'desc'},
+        {'field': 'starting_date', 'name': 'Sort by starting date, ascending', 'direction': 'asc'},
+        {'field': 'starting_date', 'name': 'Sort by starting date, descending', 'direction': 'desc'},
+        {'field': 'ending_date', 'name': 'Sort by ending date, ascending', 'direction': 'asc'},
+        {'field': 'ending_date', 'name': 'Sort by ending date, descending', 'direction': 'desc'},
         # {'field': 'starting_title', 'name': 'Sort by title, ascending', 'direction': 'asc'},
         # {'field': 'starting_title', 'name': 'Sort by title, descending', 'direction': 'desc'},
-        {'field': 'starting_country', 'name': 'Sort by country, ascending', 'direction': 'asc'},
-        {'field': 'starting_country', 'name': 'Sort by country, descending', 'direction': 'desc'},
-        {'field': 'starting_location', 'name': 'Sort by location, ascending', 'direction': 'asc'},
-        {'field': 'starting_location', 'name': 'Sort by location, descending', 'direction': 'desc'},
-        {'field': 'starting_year', 'name': 'Sort by year, ascending', 'direction': 'asc'},
-        {'field': 'starting_year', 'name': 'Sort by year, descending', 'direction': 'desc'},
+        {'field': 'starting_country', 'name': 'Sort by starting country, ascending', 'direction': 'asc'},
+        {'field': 'starting_country', 'name': 'Sort by starting country, descending', 'direction': 'desc'},
+        {'field': 'starting_location', 'name': 'Sort by starting location, ascending', 'direction': 'asc'},
+        {'field': 'starting_location', 'name': 'Sort by starting location, descending', 'direction': 'desc'},
+        {'field': 'locations', 'name': 'Sort by number of unique locations, ascending', 'direction': 'asc'},
+        {'field': 'locations', 'name': 'Sort by number of unique locations, descending', 'direction': 'desc'},
+        {'field': 'starting_year', 'name': 'Sort by starting year, ascending', 'direction': 'asc'},
+        {'field': 'starting_year', 'name': 'Sort by starting year, descending', 'direction': 'desc'},
         {'field': 'count', 'name': 'Sort by count, descending', 'direction': 'desc'},
         {'field': 'count', 'name': 'Sort by count, ascending', 'direction': 'asc'},
+        {'field': 'timespan', 'name': 'Sort by span, ascending', 'direction': 'asc'},
+        {'field': 'timespan', 'name': 'Sort by span, descending', 'direction': 'desc'},
 ]
 
 available_rows_per_page_options = [
@@ -94,15 +102,16 @@ cluster_field_mapping = {
         'locations': 'Locations',
         'average_length': 'Average length',
         'starting_title': 'Title',
-        'starting_date': 'Date',
+        'starting_date': 'Starting date',
+        'ending_date': 'Ending date',
         'starting_country': 'Country',
-        'starting_location': 'Location',
+        'starting_location': 'First printing location',
         'starting_year': 'Starting year',
-        'crossed': 'Span across mulitiple countries',
-        'out_city': 'From city',
-        'out_country': 'From country',
-        'in_city': 'To city',
-        'in_country': 'To country',
+        'crossed': 'Span across multiple countries',
+        'out_city': 'Port city',
+        'out_country': 'Port country',
+        'in_city': 'Incoming city',
+        'in_country': 'Incoming country',
         'first_text': 'Text from the first hit',
 }
 
@@ -113,8 +122,8 @@ class DataHandler:
     def __init__(self, search_type, result_type):
         self.search_type = search_type
         self.result_type = result_type
-        self.hit_interactor = SolrInteractor(core='swe_v2')
-        self.cluster_interactor = SolrInteractor(core='swe_v2_clusters')
+        self.hit_interactor = SolrInteractor(core='swe_v4')
+        self.cluster_interactor = SolrInteractor(core='swe_v4_clusters')
 
     def fetch_request_data(self, request):
         """
@@ -139,10 +148,14 @@ class DataHandler:
         parameters['hits']['start'] = 0
         parameters['hits']['rows'] = 1000
         parameters['hits']['fl'] = ",".join(fields)
+        parameters['hits']['sort'] = 'date asc'
         total_results = 0
         all_data = {}
         while True:
-            data = self._fetch_data(parameters)['hits']
+            data = self._fetch_data(parameters)
+            # metadata = self._format_metadata(data['metadata'], parameters['metadata'], request)
+            # print(metadata)
+            data = data['hits']
             parameters['hits']['start'] = parameters['hits']['start'] + parameters['hits']['rows']
             total_results = data.raw_response['response']['numFound']
             found_results = 0
@@ -154,6 +167,7 @@ class DataHandler:
                     all_data[field].append(result[field])
             if not found_results:
                 break
+        print(all_data)
         return all_data
 
     def _extract_request_parameters(self, request):
@@ -254,7 +268,8 @@ class DataHandler:
         the facet window.
         """
         data_facets = data.facets['facet_fields'][facet['field']]
-        facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
+        option_names = facet.get('option_names', {})
+        facet_options = [{'name': data_facets[i], 'gui_name': option_names.get(data_facets[i], data_facets[i]), 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
         return facet_options
 
 
@@ -278,11 +293,14 @@ class DataHandler:
         facet_labels = [v[0] for v in facet_values]
         facet_values = [v[1] for v in facet_values]
         charter = Charter()
-        data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=10)
+        data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=facet['increment'])
         entry_facet['min_value'] = min_value
         entry_facet['max_value'] = max_value
         entry_facet['data_labels'] = data_labels
         entry_facet['data_values'] = data_values
+        if facet['field'] in selected_facets:
+            entry_facet['current_selection'] = "FROM " + selected_facets[facet['field']].strip("[").strip("]")
+            entry_facet['has_selection'] = True
         return entry_facet
 
     def _format_data(self, data, parameters, request):
@@ -461,17 +479,29 @@ class DataHandler:
         for facet in data['facets']:
             single_facet_urls=[]
             if facet['has_selection']:
-                for option in facet['options']:
-                    if option['selected']: # Found the selected option
-                        facet_params = dict(current_url_parameters)
-                        facet_params['fq'] = json.loads(facet_params['fq'][0])
-                        for i in range(0, len(facet_params['fq'])):
-                            if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
-                                facet_params['fq'].pop(i)
-                                break
-                        single_facet_urls.append(self._generate_site_url(facet_params))
-                    else: # Not selected option = URL doesn't really matter as it isn't show anyways
-                        single_facet_urls.append(self._generate_site_url(current_url_parameters))
+                facet_type = facet['facet_type']
+                if facet_type == 'entry_per_value':
+                    for option in facet['options']:
+                        if option['selected']: # Found the selected option
+                            facet_params = dict(current_url_parameters)
+                            facet_params['fq'] = json.loads(facet_params['fq'][0])
+                            for i in range(0, len(facet_params['fq'])):
+                                if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                                    facet_params['fq'].pop(i)
+                                    break
+                            single_facet_urls.append(self._generate_site_url(facet_params))
+                        else: # Not selected option = URL doesn't really matter as it isn't show anyways
+                            # single_facet_urls.append(self._generate_site_url(current_url_parameters))
+                            single_facet_urls.append('')
+                elif facet_type == 'range_selector':
+                    facet_params = dict(current_url_parameters)
+                    facet_params['fq'] = json.loads(facet_params['fq'][0])
+                    for i in range(0, len(facet_params['fq'])):
+                        if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                            facet_params['fq'].pop(i)
+                            break
+                    single_facet_urls.append(self._generate_site_url(facet_params))
+                    print(single_facet_urls[-1])
             else:
                 for option in facet['options']:
                     facet_params = dict(current_url_parameters)
@@ -530,7 +560,7 @@ class DataHandler:
         url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
         loc_url = url.replace("/origin/map", "/origin/locations/map")
         flows_url = url.replace("/origin/map", "/origin/flows/map")
-        flow_url = "http://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
+        flow_url = "https://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
         return {'flow_map': flow_url}
         
 
@@ -647,11 +677,13 @@ class Mapper:
         csv_data = [['origin', 'dest', 'count']]
         dates = data['date']
         locations = data['location']
-        dates, locations = [list(a) for a in zip(*sorted(zip(dates, locations)))]
+        # dates, locations = [list(a) for a in zip(*sorted(zip(dates, locations)))]
         if self.flow_type == 'origin':
             counts = {}
             orig_date, orig_loc = dates.pop(0), locations.pop(0)
+            if orig_loc == "OUT OF SCOPE": return csv_data
             for date, location in zip(dates, locations):
+                if location == "OUT OF SCOPE": continue
                 counts[location] = counts.get(location, 0) + 1
             for key, value in counts.items():
                 csv_data.append([orig_loc, key, value])
@@ -664,22 +696,32 @@ class Mapper:
         csv_data = [['id', 'name', 'lat', 'lon']]
         dates = data['date']
         locations = data['location']
-        dates, locations = [list(a) for a in zip(*sorted(zip(dates, locations)))]
+        coordinates = data['coordinates']
+        dates, locations, coordinates = [list(a) for a in zip(*sorted(zip(dates, locations, coordinates)))]
         if self.flow_type == 'origin':
             date = dates.pop(0)
             location = locations.pop(0)
-            lat, lng = self._get_location_coordinates(location)
+            coordinate_pair = coordinates.pop(0)
+            if location == 'OUT OUF SCOPE': return csv_data
+            # lat, lng = self._get_location_coordinates(location)
+            lng, lat = coordinate_pair
             csv_data.append([location, location, lat, lng])
             found_locations = set(location)
-            for (date, location) in zip(dates, locations):
+            for (date, location, coordinate_pair) in zip(dates, locations, coordinates):
                 if location not in found_locations:
                     found_locations.add(location)
-                    lat, lng = self._get_location_coordinates(location)
+                    if location == 'OUT OF SCOPE': continue
+                    # lat, lng = self._get_location_coordinates(location)
+                    lng, lat = coordinate_pair
+                    if not lat: continue
                     csv_data.append([location, location, lat, lng])
             return csv_data
         else:
             raise NotImplementedError
 
     def _get_location_coordinates(self, location_name):
+        print(location_name)
         loc = self.gn.geocode(location_name)
+        if not loc: return None, None
+        print(loc)
         return loc.latitude, loc.longitude

@@ -7,10 +7,10 @@
 			<a class="btn" role="button" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}">
 				<i class="fas fa-times fa-sm"></i>
 			</a>
-			<a href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.name }}</a>
+			<a href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.gui_name }}</a>
 			<span class="ml-auto"> {{facet_option.value }} </span>
 		{% else %}
-			<a class="mr-auto" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.name }}</a>
+			<a class="mr-auto" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.gui_name }}</a>
 			<span class="justify-content-end"> {{facet_option.value }} </span>
 		{% endif %}
 	</div>
