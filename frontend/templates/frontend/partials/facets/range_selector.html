@@ -1,5 +1,17 @@
+{% load template_methods %}
+{% if facet.has_selection %}
+	<div class="d-flex mb-2 justify-content-center">
+	<span class="mr-2">Current selection: </span>
+	<div class="border rounded">
+		<a class="ml-2" href="{{ urls.facets|get_index:forloop.counter|get_index:0 }}"> {{ facet.current_selection }}</a>
+		<a class="btn" role="button" href="{{ urls.facets|get_index:forloop.counter|get_index:0 }}">
+			<i class="fas fa-times fa-sm"></i>
+		</a>
+	</div>
+	</div>
+{% endif %}
+
 <div class="row ml-1 mr-1 justify-content-around">
-	<span> Current selection! </span>
 	<div class="input-group">
 		<input id="{{facet.field}}_start_value" type="number" class="form-control" value="{{ facet.min_value }}" aria-label="starting_year" aria-describedby="basic-addon1">
 		<i class="ml-1 pt-2 pb-3 mr-1 fas fa-arrows-alt-h" style="padding-top: 0.70rem !important;"></i>
