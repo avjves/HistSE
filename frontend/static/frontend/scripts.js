@@ -31,8 +31,7 @@ function search() {
 	if(getParams.length == 0) {
 		var handler = currentUrl.split("/");
 		handler = handler[handler.length-1];
-		//var okHandles = ['search', 'charts'];
-		var okHandles = [];
+		var okHandles = ['search', 'charts'];
 		if(okHandles.includes(handler)) {
 			handler = '';
 		}
