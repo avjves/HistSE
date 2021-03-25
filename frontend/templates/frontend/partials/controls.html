@@ -12,27 +12,27 @@
 			</div>
 
 			<div class="mr-3 pt-1 pb-1">
-				<a class="btn btn-primary" role="button" href="{{ urls.result_type.download }}">
+				<a class="btn btn-primary" title='Download current search as TSV' role="button" href="{{ urls.result_type.download }}">
 					<i class="p-1 fas fa-file-download"></i>
 				</a>
 			</div>
 
 
 			<div class="mr-1 pt-1 pb-1">
-				<a class="btn btn-primary {% if result_type == 'search' %} disabled {% endif %}" role="button" href="{{ urls.result_type.clusters }}">
+				<a class="btn btn-primary {% if result_type == 'search' %} disabled {% endif %}" title="Show search as a list of hits" role="button" href="{{ urls.result_type.clusters }}">
 					<i class="p-1 fad fa-align-justify"></i>
 				</a>
 			</div>
 
 
 			<div class="mr-1 pt-1 pb-1">
-				<a class="btn btn-primary {% if result_type == 'charts' %} disabled {% endif %}" role="button" href="{{ urls.result_type.charts }}">
+				<a class="btn btn-primary {% if result_type == 'charts' %} disabled {% endif %}" title="Show search as a chart" role="button" href="{{ urls.result_type.charts }}">
 					<i class="p-1 fal fa-chart-bar"></i>
 				</a>
 			</div>
 
 			<div class="mr-5 pt-1 pb-1">
-				<a class="btn btn-primary {% if result_type == 'map' %} disabled {% endif %}" role="button" href="{{ urls.result_type.map_origin }}">
+				<a class="btn btn-primary {% if result_type == 'map' %} disabled {% endif %}" title="Show search on a map" role="button" href="{{ urls.result_type.map_origin }}">
 					<i class="p-1 fa fa-map-marker-alt"></i>
 				</a>
 			</div>
