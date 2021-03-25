@@ -95,7 +95,7 @@ hit_field_mapping = {
 
 cluster_field_mapping = {
         'cluster_id': 'Cluster ID',
-        'doc_id': 'Document ID',
+        # 'doc_id': 'Document ID',
         # 'id': 'ID',
         'count': 'Count',
         'timespan': 'Timespan',
@@ -115,7 +115,9 @@ cluster_field_mapping = {
         'first_text': 'Text from the first hit',
 }
 
-hit_field_mapping.update(cluster_field_mapping)
+field_mapping = {}
+field_mapping.update(hit_field_mapping)
+field_mapping.update(cluster_field_mapping)
 
 class DataHandler:
 
@@ -138,37 +140,37 @@ class DataHandler:
         formatted_data.update({'urls': urls})
         return formatted_data
 
-    def fetch_all_data(self, request, fields):
+    def fetch_all_data(self, request, fields, data_type, field_override=None):
         """
         Fetches _all_ the data with the given parameters.
         Does not generate facets or URLs.
         """
         parameters = self._extract_request_parameters(request)
-        parameters['hits']['facet'] = 'false'
-        parameters['hits']['hl'] = 'false'
-        parameters['hits']['start'] = 0
-        parameters['hits']['rows'] = 1000
-        parameters['hits']['fl'] = ",".join(fields)
-        parameters['hits']['sort'] = 'date asc'
+        parameters[data_type]['facet'] = 'false'
+        parameters[data_type]['hl'] = 'false'
+        parameters[data_type]['start'] = 0
+        parameters[data_type]['rows'] = 1000
+        parameters[data_type]['fl'] = ",".join(fields)
         total_results = 0
         all_data = {}
         while True:
-            data = self._fetch_data(parameters)
-            # metadata = self._format_metadata(data['metadata'], parameters['metadata'], request)
-            # print(metadata)
-            data = data['hits']
-            parameters['hits']['start'] = parameters['hits']['start'] + parameters['hits']['rows']
-            total_results = data.raw_response['response']['numFound']
+            data = self._fetch_data(parameters)[data_type]
+            parameters[data_type]['start'] = parameters[data_type]['start'] + parameters[data_type]['rows'] # Next iteration asks for different data
             found_results = 0
             for result in data:
                 found_results += 1
-                fields = list(result.keys())
+
+                if field_override:
+                    fields = hit_field_mapping.keys() if field_override == 'hits' else cluster_field_mapping.keys()
+                else:
+                    fields = hit_field_mapping.keys() if data_type == 'hits' else cluster_field_mapping.keys()
+
                 for field in fields:
                     all_data[field] = all_data.get(field, [])
-                    all_data[field].append(result[field])
+                    all_data[field].append(result.get(field, None))
+
             if not found_results:
                 break
-        print(all_data)
         return all_data
 
     def _extract_request_parameters(self, request):
@@ -326,7 +328,7 @@ class DataHandler:
         for result in data:
             fields = list(result.keys())
             fields.sort()
-            values = [[hit_field_mapping[field], field, result[field]] for field in fields if field in hit_field_mapping]
+            values = [[field_mapping[field], field, result[field]] for field in fields if field in field_mapping]
             results.append(values)
             ids.append(result['id'])
         parameters.update({
@@ -451,9 +453,10 @@ class DataHandler:
         """
         clusters_url = self._generate_site_url(current_url_parameters, result_type='search')
         charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
+        download_url = self._generate_site_url(current_url_parameters, result_type='download')
         map_origin_url = self._generate_site_url(current_url_parameters, result_type='origin/map')
         map_chain_url = self._generate_site_url(current_url_parameters, result_type='chain/map')
-        return {'clusters': clusters_url, 'charts': charts_url, 'map_origin': map_origin_url, 'map_chain': map_chain_url}
+        return {'clusters': clusters_url, 'charts': charts_url, 'map_origin': map_origin_url, 'map_chain': map_chain_url, 'download': download_url}
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -598,6 +601,56 @@ class DataHandler:
         else:
             url = "/{}/{}".format(search_type, result_type)
         return url
+
+
+class DataExporter:
+
+    def __init__(self, data_handler):
+        self.data_handler = data_handler
+
+    def export_current_search(self, request, search_type):
+        """
+        Exports the current data as a TSV.
+        Returns a list of lists = list of TSV lines.
+        """
+        if search_type == 'cluster':
+            hit_data = self.data_handler.fetch_all_data(request, fields=['*'], data_type='hits')
+            metadata_data = self.data_handler.fetch_all_data(request, fields=['*'], data_type='metadata')
+        elif search_type == 'hits':
+            hit_data = self.data_handler.fetch_all_data(request, fields=['*'], data_type='hits')
+            metadata_data = {}
+        else:
+            hit_data = {}
+            metadata_data = self.data_handler.fetch_all_data(request, fields=['*'], data_type='hits', field_override='clusters')
+        
+        hit_lines = self._extract_lines(hit_data)
+        metadata_lines = self._extract_lines(metadata_data)
+        lines = [['current URL', settings.DOMAIN + request.get_full_path().replace("/download?", "/search?")]]
+        lines += [['Metadata / clusters'], []]
+        lines += metadata_lines
+        lines += [[], [], [], ['Hits'], []]
+        lines += hit_lines
+        return lines
+
+    def _extract_lines(self, data):
+        """
+        Given a data dictionary, where each key represents a field name and the value is a list that contains as many values as there is to be TSV lines.
+        Exports the data to a list of lists.
+        """
+        lines = []
+        if data:
+            fields = list(data.keys())
+            lines.append(fields)
+            for i in range(0, len(data[fields[0]])):
+                line = []
+                for field in fields:
+                    if not data[field][i]:
+                        line.append("")
+                    else:
+                        line.append(" ".join(str(data[field][i]).split()))
+                lines.append(line)
+        return lines
+
 
 
 

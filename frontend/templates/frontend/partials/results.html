@@ -41,9 +41,9 @@
 										</div>
 										<div class="col-xl-9">
 											{% if field == 'cluster_id' %}
-												<a href={{urls.cluster_links|get_index:forloop.parentloop.counter}}>{{ value }}</a>
+												<a target="_blank" href={{urls.cluster_links|get_index:forloop.parentloop.counter}}>{{ value }}</a>
 											{% elif field == 'url' %}
-												<a href="{{ value }}">{{ value }}</a>
+												<a target="_blank" href="{{ value }}">{{ value }}</a>
 											{% elif field == 'starting_date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 											{% elif field == 'ending_date' %}
