@@ -309,7 +309,9 @@ class DataHandler:
 
     def _format_data(self, data, parameters, request):
         """
-
+        Returns a formatted data dictionary.
+        Adds hit AND metadata specific data fields.
+        Metadata only added if metadata key is found inside parameters.
         """
         formatted_data = self._format_hit_data(data['hits'], parameters['hits'], request)
         if 'metadata' in parameters:
@@ -337,8 +339,10 @@ class DataHandler:
         formatted_data = {
             'results': self._add_highlighting(results, ids, data),
             'facets': self._format_facets(data, parameters),
-            'sort_options': self._format_sort_options(data, parameters),
-            'rows_per_page_options': self._format_rows_per_page_options(data, parameters),
+            'sort_options': self._format_sort_options(parameters),
+            'current_sort_option': self._format_current_sort_option(parameters),
+            'rows_per_page_options': self._format_rows_per_page_options(parameters),
+            'current_rows_per_page_option': self._format_current_rows_per_page_option(parameters),
             'parameters': parameters,
             'site_parameters': site_parameters,
             'total_results': data.raw_response['response']['numFound'],
@@ -351,6 +355,17 @@ class DataHandler:
             'flow_type': self.flow_type,
         }
         return formatted_data
+
+    def _format_current_sort_option(self, parameters):
+        """
+        Returns the current sort option used.
+        Returns it as a dictionary.
+        """
+        sort_options = self._format_sort_options(parameters)
+        for option in sort_options:
+            if option['field'] + ' ' + option['direction'] == parameters['sort'].replace("_asc", " asc").replace("_desc", " desc"):
+                return option
+        return {'name': ''} # Should hopefully never go here - would mean a sort option was not found.
 
     def _add_highlighting(self, results, ids, data):
         """
@@ -369,7 +384,7 @@ class DataHandler:
                                 result[res_i][2] = result[res_i][2].replace(non_highlighted, highlighting)
         return results
 
-    def _format_sort_options(self, data, parameters):
+    def _format_sort_options(self, parameters):
         """
         Formats the currently available sort options for django templates.
         Determines available sort options by the search_type.
@@ -381,16 +396,29 @@ class DataHandler:
             sort_options = available_hit_sort_options
         return sort_options
 
-    def _format_rows_per_page_options(self, data, parameters):
+    def _format_rows_per_page_options(self, parameters):
         """
         Formats the currently available rows per page options for django templates.
         """
         return available_rows_per_page_options
 
+    def _format_current_rows_per_page_option(self, parameters):
+        """
+        Returns the current rows per page option.
+        """
+        available_row_options = self._format_rows_per_page_options(parameters)
+        for option in available_row_options:
+            if option['value'] == parameters['rows']:
+                return option
+        return available_row_options[0] # Should hopefully never go here either
+
+
 
     def _format_metadata(self, data, parameters, request):
         """
-        
+        Receives the data from the interactor and formats it in a format that can be returned to the client.
+        That is, data that can be rendered with the requested template.
+        Equivalent to the _format_hit function, but all fields etc. are metadata specific.
         """
         results = []
         for result in data:
