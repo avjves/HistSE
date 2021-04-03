@@ -1,8 +1,22 @@
 """
 
-Contains all field configs.
+Contains all data related configs.
 
 """
+
+####
+#
+# SETTINGS
+#
+####
+
+enrich_kansalliskirjasto_URLs = True
+
+####
+#
+# FIELD INFORMATION
+#
+####
 
 available_hit_facets = [
         {'field': 'title', 'name': 'Title'},
@@ -86,15 +100,18 @@ cluster_field_mapping = {
         # 'doc_id': 'Document ID',
         # 'id': 'ID',
         'count': 'Count',
-        'timespan': 'Timespan',
-        'locations': 'Locations',
+        'timespan': 'Timespan in days',
+        'locations': 'Unique locations',
         'average_length': 'Average length',
         'starting_title': 'Title',
         'starting_date': 'Starting date',
         'ending_date': 'Ending date',
+        'ending_country': 'Ending Country',
         'starting_country': 'Country',
         'starting_location': 'First printing location',
         'starting_year': 'Starting year',
+        'all_locations': 'All unique locations',
+        'all_countries': 'All unique countries',
         'crossed': 'Span across multiple countries',
         'out_city': 'Port city',
         'out_country': 'Port country',
