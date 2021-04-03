@@ -17,6 +17,10 @@ def prettify_date(date_string):
     return date_string.split("T")[0]
 
 @register.filter
+def prettify_lists(date_string):
+    return ", ".join(date_string)
+
+@register.filter
 def show_em(data, key):
     if key == 'text' or key == 'first_text':
         splits = data.split("<em>")

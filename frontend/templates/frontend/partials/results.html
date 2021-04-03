@@ -12,7 +12,15 @@
 								<div class="font-weight-light">{{ field_ui }}</div>
 							</div>
 							<div class="col-xl-9">
+								{% if field == 'all_locations' or field == 'all_countries' %}
+								<span>{{ value|prettify_lists }}</span>
+								{% elif field == 'starting_date' %}
+								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+								{% elif field == 'ending_date' %}
+								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+								{% else %}
 								<span>{{ value }}</span>
+								{% endif %}
 							</div>
 							<br />
 						</div>
@@ -50,6 +58,8 @@
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 											{% elif field == 'date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+											{% elif field == 'all_locations' or field == 'all_countries' %}
+											<span>{% for val in value|show_em:field %}{{ val|prettify_lists }}{% endfor %}</span>
 											{% else %}
 											<span>{% for val in value|show_em:field %}{{ val }}{% endfor %}</span>
 											{% endif %}
