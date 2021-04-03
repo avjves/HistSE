@@ -12,9 +12,11 @@ from geopy import geocoders
 from django.conf import settings
 
 from solr_interactor.models import SolrInteractor
-from HistSE.field_configs import available_hit_facets, available_cluster_facets, skipped_hit_fields, skipped_metadata_fields
-from HistSE.field_configs import available_hit_sort_options, available_cluster_sort_options, available_rows_per_page_options
-from HistSE.field_configs import hit_field_mapping, cluster_field_mapping
+from HistSE.data_config import available_hit_facets, available_cluster_facets, skipped_hit_fields, skipped_metadata_fields
+from HistSE.data_config import available_hit_sort_options, available_cluster_sort_options, available_rows_per_page_options
+from HistSE.data_config import hit_field_mapping, cluster_field_mapping
+from HistSE import data_config
+### TODO dont import the field configs explicitly
 
 field_mapping = {}
 field_mapping.update(hit_field_mapping)
@@ -197,7 +199,6 @@ class DataHandler:
         facet_labels = [v[0] for v in facet_values]
         facet_values = [v[1] for v in facet_values]
         charter = Charter()
-        print(facet)
         data_labels, data_values = charter.chart_bucket_range(facet_labels, facet_values, bucket_size=facet['increment'])
         entry_facet['min_value'] = min_value
         entry_facet['max_value'] = max_value
@@ -231,7 +232,7 @@ class DataHandler:
         for result in data:
             fields = list(result.keys())
             fields.sort()
-            values = [[field_mapping[field], field, result[field]] for field in fields if field in field_mapping]
+            values = [[field_mapping[field], field, self._enrich_hit_result(result[field], field, parameters)] for field in fields if field in field_mapping]
             results.append(values)
             ids.append(result['id'])
         parameters.update({
@@ -256,6 +257,43 @@ class DataHandler:
             'flow_type': self.flow_type,
         }
         return formatted_data
+
+    def _enrich_hit_result(self, data, field, parameters):
+        """
+        Enriches certain results received from Solr.
+        Different fields have their own enrich functions.
+        """
+        try:
+            if field == 'url':
+                return self._enrich_hit_result_url(data, parameters)
+            else:
+                return data
+        except:  # In case something weird happens we just return the result without any enriching -  it's better than crashing!
+            return data
+
+    def _enrich_hit_result_url(self, data, parameters):
+        """
+        Enriches the received URL. 
+        For now, adds the query term to Kansalliskirjasto URLs.
+        """
+        if data_config.enrich_kansalliskirjasto_URLs and 'kansalliskirjasto' in data:
+            ## For now, assuming the user will have a text: query in the query field OR no : (No field specified = default search = text field)
+            if ":" not in parameters['q']:
+                # : not found in query, assuming everything in the query field is the desired highlight.
+                url = data + '&term={}'.format(parameters['q'])
+            elif "text:" in parameters['q']:
+                # text: found in the query. Attempting two things: 1. see if the q is wrapped in quotes or 2. take first word
+                query = parameters['q'].split("text:", 1)[1]  
+                if query[0] == '"': # Wrapped in quotes? Probably
+                    query = query.split('"')[1]
+                else:
+                    query = query.split(" ")[0]
+                url = data + '&term={}'.format(query)
+            else:
+                url = data
+            return url
+        else:
+            return data
 
     def _format_current_sort_option(self, parameters):
         """
@@ -437,7 +475,6 @@ class DataHandler:
                             facet_params['fq'].pop(i)
                             break
                     single_facet_urls.append(self._generate_site_url(facet_params))
-                    print(single_facet_urls[-1])
             else:
                 for option in facet['options']:
                     facet_params = dict(current_url_parameters)
