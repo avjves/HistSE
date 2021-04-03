@@ -15,7 +15,6 @@ def search(request, search_type):
     print("GET params:", request.GET)
     data_handler = DataHandler(search_type, 'search')
     data = data_handler.fetch_request_data(request)
-    print(data['urls']['facets'])
     data.update({'current_site': 'search'})
     # return render(request, 'frontend/search.html')
     return render(request, 'frontend/search.html', context=data)
