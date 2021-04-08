@@ -73,6 +73,8 @@ available_cluster_sort_options = [
         {'field': 'count', 'name': 'Sort by count, ascending', 'direction': 'asc'},
         {'field': 'timespan', 'name': 'Sort by span, ascending', 'direction': 'asc'},
         {'field': 'timespan', 'name': 'Sort by span, descending', 'direction': 'desc'},
+        {'field': 'virality_score', 'name': 'Sort by virality score, ascending', 'direction': 'asc'},
+        {'field': 'virality_score', 'name': 'Sort by virality score, descending', 'direction': 'desc'},
 ]
 
 available_rows_per_page_options = [
@@ -117,6 +119,7 @@ cluster_field_mapping = {
         'out_country': 'Port country',
         'in_city': 'Incoming city',
         'in_country': 'Incoming country',
+        'virality_score': 'Virality score',
         'first_text': 'Text from the first hit',
 }
 

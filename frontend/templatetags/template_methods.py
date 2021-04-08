@@ -21,6 +21,10 @@ def prettify_lists(date_string):
     return ", ".join(date_string)
 
 @register.filter
+def prettify_number(value):
+    return "{:.2f}".format(value)
+
+@register.filter
 def show_em(data, key):
     if key == 'text' or key == 'first_text':
         splits = data.split("<em>")

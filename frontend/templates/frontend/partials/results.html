@@ -54,6 +54,8 @@
 												<a target="_blank" href="{{ value }}">{{ value }}</a>
 											{% elif field == 'starting_date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+											{% elif field == 'virality_score' %}
+											<span>{% for val in value|show_em:field %}{{ val|prettify_number }}{% endfor %}</span>
 											{% elif field == 'ending_date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 											{% elif field == 'date' %}
