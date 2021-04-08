@@ -14,6 +14,8 @@
 							<div class="col-xl-9">
 								{% if field == 'all_locations' or field == 'all_countries' %}
 								<span>{{ value|prettify_lists }}</span>
+								{% elif field == 'virality_score' %}
+								<span>{% for val in value|show_em:field %}{{ val|prettify_number }}{% endfor %}</span>
 								{% elif field == 'starting_date' %}
 								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 								{% elif field == 'ending_date' %}
