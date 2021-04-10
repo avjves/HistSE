@@ -11,6 +11,9 @@ from data_handler.models import DataHandler, DataExporter, Charter, Mapper
 def index(request):
     return render(request, 'frontend/index.html', context={'current_site': 'index'})
 
+def updates(request):
+    return render(request, 'frontend/updates.html', context={'current_site': 'updates'})
+
 def search(request, search_type):
     print("GET params:", request.GET)
     data_handler = DataHandler(search_type, 'search')
