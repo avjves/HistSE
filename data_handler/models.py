@@ -55,11 +55,11 @@ class DataHandler:
         parameters[data_type]['rows'] = 1000
         parameters[data_type]['fl'] = ",".join(fields)
         total_results = 0
+        found_results = 0
         all_data = {}
         while True:
             data = self._fetch_data(parameters)[data_type]
             parameters[data_type]['start'] = parameters[data_type]['start'] + parameters[data_type]['rows'] # Next iteration asks for different data
-            found_results = 0
             for result in data:
                 found_results += 1
 
@@ -74,6 +74,7 @@ class DataHandler:
 
             if not found_results:
                 break
+            if found_results > 50000: break
         return all_data
 
     def _extract_request_parameters(self, request):
