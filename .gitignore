@@ -141,3 +141,4 @@ cython_debug/
 .swp
 
 todo.txt
+*.pkl

@@ -28,8 +28,8 @@ class DataHandler:
         self.search_type = search_type
         self.result_type = result_type
         self.flow_type = flow_type
-        self.hit_interactor = SolrInteractor(core='swe_v5')
-        self.cluster_interactor = SolrInteractor(core='swe_v6_clusters')
+        self.hit_interactor = SolrInteractor(core='swe_v5', use_cache=True)
+        self.cluster_interactor = SolrInteractor(core='swe_v6_clusters', use_cache=True)
 
     def fetch_request_data(self, request):
         """

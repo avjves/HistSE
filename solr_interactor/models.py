@@ -1,9 +1,14 @@
 import pysolr
+import pickle
+import json
+import os
 
 class SolrInteractor:
 
-    def __init__(self, core, host="http://localhost", port=8983):
+    def __init__(self, core, host="http://localhost", port=8983, use_cache=False):
         solr_address = "{}:{}/solr/{}/".format(host, port, core)
+        self.use_cache = use_cache
+        self.core = core
         self.solr = pysolr.Solr(solr_address)
 
     def _do_bogus_search(self, params):
@@ -23,10 +28,23 @@ class SolrInteractor:
         solr_parameters = self._filter_parameters(parameters)
         print("Solr parameters", solr_parameters)
         try:
-            data = self.solr.search(**solr_parameters)
+            data = self._search(parameters, self.use_cache)
         except pysolr.SolrError:
+
             return self._do_bogus_search(solr_parameters)
         return data
+
+    def _fetch_cache(self, parameters):
+        """
+        Attempts to fetch the Solr results from a cache.
+        Cache is defined by solr core name + hash of parameters.
+        """
+        cache_key = '{}-{}'.format(self.core, hash(json.dumps(parameters)))
+        cache_path = 'solr_interactor/cache/{}.pkl'.format(cache_key)
+        if os.path.exists(cache_path):
+            return pickle.load(open(cache_path, 'rb'))
+        else:
+            return None
 
     def _filter_parameters(self, parameters):
         """
@@ -52,3 +70,29 @@ class SolrInteractor:
 
             new_parameters[parameter_key] = parameter_value
         return new_parameters
+
+    def _save_cache(self, results, parameters):
+        """
+        Saves the received results from solr into the cache.
+        """
+        cache_key = '{}-{}'.format(self.core, hash(json.dumps(parameters)))
+        cache_path = 'solr_interactor/cache/{}.pkl'.format(cache_key)
+        pickle.dump(results, open(cache_path, "wb"))
+
+    def _search(self, parameters, use_cache):
+        """
+        Given the parameters, searches the Solr.
+        Checks whether to use cache or not.
+        If using cache but it still fails, runs a normal Solr search.
+        """
+        if use_cache:
+            cache_results = self._fetch_cache(parameters)
+            if not cache_results:
+                solr_results = self._search(parameters, False)
+                self._save_cache(solr_results, parameters)
+                return solr_results
+            else:
+                return cache_results
+        else:
+            return self.solr.search(**parameters)
+
