@@ -5,7 +5,7 @@
 		{% include "frontend/partials/stylesheets.html" %}
 		{% include "frontend/partials/scripts.html" %}
 	</head>
-	<body>
+	<body style="display: none" id="body">
 		<div id="wrapper">
 			<div id="content-wrapper" class="d-flex flex-column">
 				<div id="content">
@@ -31,4 +31,7 @@
 
 
 	</body>
+	<script>
+		document.getElementById('body').style.display = 'block'; //hack to stop flickering, as we have inline JS due to the arbitrary modules. Only show the page once everything has been loaded.
+	</script>
 </html>
