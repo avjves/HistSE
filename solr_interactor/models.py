@@ -2,6 +2,7 @@ import pysolr
 import pickle
 import json
 import os
+import hashlib
 
 class SolrInteractor:
 
@@ -39,7 +40,7 @@ class SolrInteractor:
         Attempts to fetch the Solr results from a cache.
         Cache is defined by solr core name + hash of parameters.
         """
-        cache_key = '{}-{}'.format(self.core, hash(json.dumps(parameters)))
+        cache_key = '{}-{}'.format(self.core, hashlib.sha256(json.dumps(parameters).encode('utf-8')).hexdigest())
         cache_path = 'solr_interactor/cache/{}.pkl'.format(cache_key)
         if os.path.exists(cache_path):
             return pickle.load(open(cache_path, 'rb'))
@@ -75,7 +76,7 @@ class SolrInteractor:
         """
         Saves the received results from solr into the cache.
         """
-        cache_key = '{}-{}'.format(self.core, hash(json.dumps(parameters)))
+        cache_key = '{}-{}'.format(self.core, hashlib.sha256(json.dumps(parameters).encode('utf-8')).hexdigest())
         cache_path = 'solr_interactor/cache/{}.pkl'.format(cache_key)
         pickle.dump(results, open(cache_path, "wb"))
 
