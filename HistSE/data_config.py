@@ -20,11 +20,11 @@ enrich_normalized_chart_values = True
 ####
 
 available_hit_facets = [
-        {'field': 'title', 'name': 'Title'},
-        {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector', 'increment': 10},
-        {'field': 'month', 'name': 'Month of apperance', 'increment': 10},
-        {'field': 'location', 'name': 'Location'},
-        {'field': 'country', 'name': 'Country'},
+        {'field': 'title', 'name': 'Title', 'visible': True},
+        {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector', 'increment': 10, 'visible': True},
+        {'field': 'month', 'name': 'Month of apperance', 'increment': 10, 'visible': False},
+        {'field': 'location', 'name': 'Location', 'visible': True},
+        {'field': 'country', 'name': 'Country', 'visible': True},
 ]
 
 skipped_hit_fields = {}

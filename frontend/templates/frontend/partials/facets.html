@@ -3,19 +3,19 @@
 
 <h1 class="h5 mb-1 text-gray-800">Search limiting:</h1>
 {% for facet in facets %}
-
+{% if facet.visible %}
 <div class="card shadow mb-2 {% if facet.has_selection %} border-left-success {% else %} border-left-secondary {% endif %}">
 	<div class="card-header py-3" data-toggle="collapse" data-target="#{{facet.field}}Collapse">
 		<h6 class="m-0 font-weight-bold text-primary">{{facet.name}}</h6>
 	</div>
 	<div class="collapse card body p-2 {% if facet.has_selection %} show {% endif %}" id="{{facet.field}}Collapse">
 		{% if facet.facet_type == 'entry_per_value' %}
-			{% include "frontend/partials/facets/entry_per_value.html" with facet=facet %}
+		{% include "frontend/partials/facets/entry_per_value.html" with facet=facet %}
 		{% elif facet.facet_type == 'range_selector' %}
-			{% include "frontend/partials/facets/range_selector.html" with facet=facet %}
+		{% include "frontend/partials/facets/range_selector.html" with facet=facet %}
 		{% endif %}
 	</div>
-
 </div>
+{% endif %}
 {% endfor %}
 
