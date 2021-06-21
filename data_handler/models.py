@@ -24,12 +24,12 @@ field_mapping.update(cluster_field_mapping)
 
 class DataHandler:
 
-    def __init__(self, search_type, result_type, flow_type='origin'):
+    def __init__(self, search_type, result_type, extra_args={}):
         self.search_type = search_type
         self.result_type = result_type
-        self.flow_type = flow_type
-        self.hit_interactor = SolrInteractor(core='swe_v5', use_cache=True)
-        self.cluster_interactor = SolrInteractor(core='swe_v6_clusters', use_cache=True)
+        self.extra_args = extra_args
+        self.hit_interactor = SolrInteractor(core='swe_v10', use_cache=False)
+        self.cluster_interactor = SolrInteractor(core='swe_v10_clusters', use_cache=False)
 
     def fetch_request_data(self, request):
         """
@@ -255,8 +255,10 @@ class DataHandler:
             'end_num_pagination': parameters['start'] + parameters['rows'],
             'search_type': self.search_type,
             'result_type': self.result_type,
-            'flow_type': self.flow_type,
         }
+        for key, value in self.extra_args.items():
+            formatted_data[key] = value
+
         return formatted_data
 
     def _enrich_hit_result(self, data, field, parameters):
@@ -541,7 +543,7 @@ class DataHandler:
 
     def _generate_site_urls_flowmap(self, current_url_parameters, data):
         current_domain = settings.DOMAIN
-        url = current_domain + self._generate_site_url(current_url_parameters, result_type='{}/map_data'.format(self.flow_type))
+        url = current_domain + self._generate_site_url(current_url_parameters, result_type='{}/map_data'.format(self.extra_args.get('flow_type', '')))
         # url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
         loc_url = url.replace("/map", "/locations/map")
         flows_url = url.replace("/map", "/flows/map")

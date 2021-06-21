@@ -48,7 +48,7 @@ def chart_better(request, search_type, normalization_type, date_scope):
 
 
 def map(request, search_type, flow_type):
-    data_handler = DataHandler(search_type, 'map', flow_type)
+    data_handler = DataHandler(search_type, 'map', extra_args={'flow_type': flow_type})
     data = data_handler.fetch_request_data(request)
     return render(request, 'frontend/map.html', context=data)
 
