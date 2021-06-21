@@ -143,8 +143,8 @@ class DataHandler:
         if facet_params:
             for selected_facet_param in facet_params:
                 key, value = selected_facet_param.split(":", 1)
-                selected_facets[key] = value.strip('"')
-        
+                selected_facets[key] = selected_facets.get(key, [])
+                selected_facets[key].append(value.strip('"'))
         for facet in available_facets:
             facet_type = facet.get('facet_type', 'entry_per_value')
             if facet_type == 'entry_per_value':
@@ -161,12 +161,17 @@ class DataHandler:
         """
         facet_options = self._format_facets_default(data, parameters, facet)
         facet_selected = False
+        negative_facet_selected = False
         if facet['field'] in selected_facets:
-            facet_options = [facet_option for facet_option in facet_options if facet_option['name'] == selected_facets[facet['field']]]
+            facet_options = [facet_option for facet_option in facet_options if facet_option['name'] in selected_facets[facet['field']]]
             facet_options[0]['selected'] = True
             facet_selected = True
+        if '-' + facet['field'] in selected_facets:
+            negative_facet_options = [{'name': name, 'gui_name': name, 'value': 0, 'selected': False, 'unselected': True} for name in selected_facets['-' + facet['field']]]
+            facet_options += negative_facet_options
+            negative_facet_selected = True
         facet_options.sort(key=itemgetter('value'), reverse=True)
-        return {'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected, 'facet_type': 'entry_per_value'}
+        return {'field': facet['field'], 'name': facet['name'], 'options': facet_options, 'has_selection': facet_selected, 'has_negative_selection': negative_facet_selected, 'facet_type': 'entry_per_value', 'visible': facet['visible']}
 
 
     def _format_facets_default(self, data, parameters, facet):
@@ -185,7 +190,7 @@ class DataHandler:
         Range limited facets
         Attemps to create some values that can be charted and shown to user.
         """
-        entry_facet = {'field': facet['field'], 'name': facet['name'], 'facet_type': 'range_selector', 'has_selection': False, 'options': self._format_facets_default(data, parameters, facet)}
+        entry_facet = {'field': facet['field'], 'name': facet['name'], 'facet_type': 'range_selector', 'has_selection': False, 'options': self._format_facets_default(data, parameters, facet), 'visible': facet['visible']}
         data_facets = data.facets['facet_fields'][facet['field']]
         facet_options = [{'name': data_facets[i], 'value': data_facets[i+1], 'selected': False} for i in range(0,len(data_facets), 2) if data_facets[i+1] > 0]
         facet_values = []
@@ -206,7 +211,7 @@ class DataHandler:
         entry_facet['data_labels'] = data_labels
         entry_facet['data_values'] = data_values
         if facet['field'] in selected_facets:
-            entry_facet['current_selection'] = "FROM " + selected_facets[facet['field']].strip("[").strip("]")
+            entry_facet['current_selection'] = "FROM " + selected_facets[facet['field']][0].strip("[").strip("]")
             entry_facet['has_selection'] = True
         return entry_facet
 
@@ -476,10 +481,18 @@ class DataHandler:
                                 if facet_params['fq'][i].split(":", 1)[0] == facet['field']:
                                     facet_params['fq'].pop(i)
                                     break
-                            single_facet_urls.append(self._generate_site_url(facet_params))
+                            single_facet_urls.append({'selected': self._generate_site_url(facet_params)})
+                        elif option['unselected']:
+                            facet_params = dict(current_url_parameters)
+                            facet_params['fq'] = json.loads(facet_params['fq'][0])
+                            for i in range(0, len(facet_params['fq'])):
+                                if '-' + facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                                    facet_params['fq'].pop(i)
+                                    break
+                            single_facet_urls.append({'selected': self._generate_site_url(facet_params)})
                         else: # Not selected option = URL doesn't really matter as it isn't show anyways
                             # single_facet_urls.append(self._generate_site_url(current_url_parameters))
-                            single_facet_urls.append('')
+                            single_facet_urls.append({'selected': ''})
                 elif facet_type == 'range_selector':
                     facet_params = dict(current_url_parameters)
                     facet_params['fq'] = json.loads(facet_params['fq'][0])
@@ -495,8 +508,13 @@ class DataHandler:
                         facet_params['fq'] = json.loads(facet_params['fq'][0])
                     else:
                         facet_params['fq'] = []
+                    negative_facet_params = json.loads(json.dumps(facet_params))
+                    previous_facet_params = json.loads(json.dumps(facet_params))
                     facet_params['fq'].append('{}:{}'.format(facet['field'], option['name']))
-                    single_facet_urls.append(self._generate_site_url(facet_params))
+                    negative_facet_params['fq'].append('-{}:{}'.format(facet['field'], option['name']))
+                    if '-{}:{}'.format(facet['field'], option['name']) in previous_facet_params['fq']:
+                        previous_facet_params['fq'].remove('-{}:{}'.format(facet['field'], option['name']))
+                    single_facet_urls.append({'selected': self._generate_site_url(facet_params), 'unselected': self._generate_site_url(negative_facet_params), 'previous': self._generate_site_url(previous_facet_params)})
             facet_urls.append(single_facet_urls)
         return facet_urls
         
