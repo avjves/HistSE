@@ -27,9 +27,24 @@ def chart(request, search_type):
     data_handler = DataHandler(search_type, 'charts')
     data = data_handler.fetch_request_data(request)
     charter = Charter()
-    labels, values, name = charter.chart(data)
+    labels, values, name = charter.chart(data, request)
     data.update({'chart_labels': list(labels), 'chart_values': list(values), 'chart_name': name})
     return render(request, 'frontend/chart.html', context=data)
+
+def chart_better(request, search_type, normalization_type, date_scope):
+    data_handler = DataHandler(search_type, 'charts', extra_args={'normalization_type': normalization_type, 'date_scope': date_scope})
+    data = data_handler.fetch_request_data(request)
+    new_facets = []
+    for facet in data['facets']:
+        if date_scope == 'year' and facet['field'] == 'year':
+            new_facets.append(facet)
+        elif date_scope == 'month' and facet['field'] == 'month':
+            new_facets.append(facet)
+    charter = Charter()
+    labels, values, name = charter.chart(new_facets, normalization_type, date_scope, request)
+    data.update({'chart_labels': list(labels), 'chart_values': list(values), 'chart_name': name})
+    return render(request, 'frontend/chart.html', context=data)
+
 
 
 def map(request, search_type, flow_type):

@@ -11,6 +11,7 @@ Contains all data related configs.
 ####
 
 enrich_kansalliskirjasto_URLs = True
+enrich_normalized_chart_values = True
 
 ####
 #
@@ -21,6 +22,7 @@ enrich_kansalliskirjasto_URLs = True
 available_hit_facets = [
         {'field': 'title', 'name': 'Title'},
         {'field': 'year', 'name': 'Year of apperance', 'facet_type': 'range_selector', 'increment': 10},
+        {'field': 'month', 'name': 'Month of apperance', 'increment': 10},
         {'field': 'location', 'name': 'Location'},
         {'field': 'country', 'name': 'Country'},
 ]

@@ -388,7 +388,7 @@ class DataHandler:
         urls['sort_options'] = self._generate_site_urls_sort_options(current_url_parameters, data)
         urls['rows_per_page_options'] = self._generate_site_urls_rows_per_page_options(current_url_parameters, data)
         urls['search_type'] = self._generate_site_urls_change_search_type(current_url_parameters, data)
-        urls['result_type'] = self._generate_site_urls_change_result_type(current_url_parameters, data)
+        urls['result_type'] = self._generate_site_urls_change_result_type(current_url_parameters, data, request)
         urls['flowmap'] = self._generate_site_urls_flowmap(current_url_parameters, data)
         return urls
 
@@ -415,16 +415,26 @@ class DataHandler:
         return {'hits': hits_search_type, 'clusters': clusters_search_type}
             
 
-    def _generate_site_urls_change_result_type(self, current_url_parameters, data):
+    def _generate_site_urls_change_result_type(self, current_url_parameters, data, request):
         """
         Generates URLs to change between showing cluster texts or charts.
         """
         clusters_url = self._generate_site_url(current_url_parameters, result_type='search')
-        charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
+        charts_url = self._generate_site_url(current_url_parameters, result_type='charts/absolute/year')
+        # charts_url = self._generate_site_url(current_url_parameters, result_type='charts')
         download_url = self._generate_site_url(current_url_parameters, result_type='download')
         map_origin_url = self._generate_site_url(current_url_parameters, result_type='origin/map')
         map_chain_url = self._generate_site_url(current_url_parameters, result_type='chain/map')
-        return {'clusters': clusters_url, 'charts': charts_url, 'map_origin': map_origin_url, 'map_chain': map_chain_url, 'download': download_url}
+        urls = {'clusters': clusters_url, 'charts': charts_url, 'map_origin': map_origin_url, 'map_chain': map_chain_url, 'download': download_url}
+        ### Chart options
+        current_norm_type = 'absolute' if 'absolute' in request.path else 'normalized'
+        current_scope_type = 'year' if 'year' in request.path else 'month'
+        urls['charts_norm_absolute'] = self._generate_site_url(current_url_parameters, result_type='charts/{}/{}'.format('absolute', current_scope_type))
+        urls['charts_norm_normalized'] = self._generate_site_url(current_url_parameters, result_type='charts/{}/{}'.format('normalized', current_scope_type))
+        urls['charts_scope_year'] = self._generate_site_url(current_url_parameters, result_type='charts/{}/{}'.format(current_norm_type, 'year'))
+        urls['charts_scope_month'] = self._generate_site_url(current_url_parameters, result_type='charts/{}/{}'.format(current_norm_type, 'month'))
+        return urls
+
 
 
     def _generate_site_urls_cluster_links(self, current_url_parameters, data):
@@ -569,6 +579,16 @@ class DataHandler:
             url = "/{}/{}".format(search_type, result_type)
         return url
 
+    def _enrich_site_urls_result_type(self, parameters, search_type, request):
+        """
+        Enriches urls used to change the result type.
+        """
+        if data_config.enrich_normalized_chart_values and search_type == 'charts':
+            if bool(request.GET.get('normalization', '')):
+                pass
+        return parameters
+
+
 
 class DataExporter:
 
@@ -626,17 +646,18 @@ class Charter:
     def __init__(self):
         pass
 
-    def chart(self, data):
+    def chart(self, facets, normalization_type, date_scope, request):
         """
         Generates a chart from the given query.
         """
         values = []
         labels, values, name = [], [], ''
-        for facet in data['facets']:
+        for facet in facets: 
             if facet['field'] == 'year':
                 for option in facet['options']:
                     year = int(option['name'])
                     value = int(option['value'])
+                    year, value = self._enrich_label_data(year, value, normalization_type, date_scope, request)
                     values.append([year, value])
                 if values:
                     values.sort(key=itemgetter(0))
@@ -647,11 +668,36 @@ class Charter:
                 for option in facet['options']:
                     year = int(option['name'])
                     value = int(option['value'])
+                    year, value = self._enrich_label_data(year, value, normalization_type, date_scope, request)
                     values.append([year, value])
                 if values:
                     values.sort(key=itemgetter(0))
                     labels, values = list(zip(*values))
-                    name = '# of clusters per year'
+                    name = '# of clusters starting per year'
+                break
+            if facet['field'] == 'month':
+                for option in facet['options']:
+                    month = option['name']
+                    value = int(option['value'])
+                    month, value = self._enrich_label_data(month, value, normalization_type, date_scope, request)
+                    month = "_".join(month.split("_")[::-1])
+                    values.append([month, value])
+                if values:
+                    values.sort(key=itemgetter(0))
+                    labels, values = list(zip(*values))
+                    name = '# of hits per month'
+                break
+            if facet['field'] == 'starting_month':
+                for option in facet['options']:
+                    month = int(option['name'])
+                    value = int(option['value'])
+                    month, value = self._enrich_label_data(month, value, normalization_type, date_scope, request)
+                    month = "_".join(month.split("_")[::-1])
+                    values.append([month, value])
+                if values:
+                    values.sort(key=itemgetter(0))
+                    labels, values = list(zip(*values))
+                    name = '# of clusters starting per month'
                 break
         return labels, values, name
 
@@ -682,6 +728,19 @@ class Charter:
             new_labels.append("{} - {}".format(bucket_indexes[bucket_i][0], bucket_indexes[bucket_i][1]))
             new_data.append(sum([v[1] for v in bucket]))
         return new_labels, new_data
+
+    def _enrich_label_data(self, label, value, normalization_type, date_scope, request):
+        if data_config.enrich_normalized_chart_values and normalization_type == 'normalized':
+            from data_handler.data_enrichment.year_normalization import year_multipliers
+            if date_scope == 'year':
+                value = round(value/year_multipliers[label]*10000, 4)
+            else:
+                month, year = label.split("_")
+                value = round(value/year_multipliers[int(year)]*10000, 4)
+            return label, value
+
+        return label, value
+
 
 
 class Mapper:

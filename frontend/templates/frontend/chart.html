@@ -32,7 +32,7 @@
 			var chart = new Chart(ctx, {
 				type: 'bar',
 				data: {
-					labels: {{ chart_labels }},
+					labels: {{ chart_labels|safe }},
 					datasets: [{
 						label: "{{ chart_name }}",
 						data: {{ chart_values }},
