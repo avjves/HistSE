@@ -29,9 +29,8 @@ class SolrInteractor:
         solr_parameters = self._filter_parameters(parameters)
         print("Solr parameters", solr_parameters)
         try:
-            data = self._search(parameters, self.use_cache)
+            data = self._search(solr_parameters, self.use_cache)
         except pysolr.SolrError:
-
             return self._do_bogus_search(solr_parameters)
         return data
 
