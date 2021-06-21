@@ -18,7 +18,7 @@
 			<a class="btn" role="button" href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter|get_item:'selected' }}">
 				<i class="fas fa-times fa-sm"></i>
 			</a>
-			<a href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter }}"> {{ facet_option.gui_name }}</a>
+			<a href="{{ urls.facets|get_index:forloop.parentloop.counter|get_index:forloop.counter|get_item:'selected' }}"> {{ facet_option.gui_name }}</a>
 			<span class="ml-auto"> {{facet_option.value }} </span>
 		{% else %}
 			{% if facet_option.value != 0 %}

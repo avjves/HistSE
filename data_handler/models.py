@@ -486,10 +486,10 @@ class DataHandler:
                             facet_params = dict(current_url_parameters)
                             facet_params['fq'] = json.loads(facet_params['fq'][0])
                             for i in range(0, len(facet_params['fq'])):
-                                if '-' + facet_params['fq'][i].split(":", 1)[0] == facet['field']:
+                                if facet_params['fq'][i].split(":", 1)[0] == '-' + facet['field']:
                                     facet_params['fq'].pop(i)
                                     break
-                            single_facet_urls.append({'selected': self._generate_site_url(facet_params)})
+                            single_facet_urls.append({'previous': self._generate_site_url(facet_params)})
                         else: # Not selected option = URL doesn't really matter as it isn't show anyways
                             # single_facet_urls.append(self._generate_site_url(current_url_parameters))
                             single_facet_urls.append({'selected': ''})
