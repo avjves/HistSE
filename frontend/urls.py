@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
         path('', views.index),
         path('updates', views.updates),
+        path('about_us', views.aboutus),
         path('<str:search_type>/search', views.search),
         # path('<str:search_type>/charts', views.chart),
         path('<str:search_type>/charts/<str:normalization_type>/<str:date_scope>', views.chart_better),

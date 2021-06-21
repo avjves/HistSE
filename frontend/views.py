@@ -14,6 +14,10 @@ def index(request):
 def updates(request):
     return render(request, 'frontend/updates.html', context={'current_site': 'updates'})
 
+def aboutus(request):
+    return render(request, 'frontend/aboutus.html', context={'current_site': 'about_us'})
+
+
 def search(request, search_type):
     print("GET params:", request.GET)
     data_handler = DataHandler(search_type, 'search')
