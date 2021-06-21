@@ -1,8 +1,20 @@
 {% load template_methods %}
 <div class="card shadow p-2">
 	<div class"card body">
-		<a class="btn btn-primary {% if flow_type == 'origin' %} disabled {% endif %}" href="{{urls.result_type.map_origin}}">Origin to rest hits</a>
-		<a class="btn btn-primary {% if flow_type == 'chain' %} disabled {% endif %}" href="{{urls.result_type.map_chain}}">Chain hits together</a>
+		<div>
+			<h5> Change the linking method. <h5>
+		</div>
+		<div>
+			<label> Origin to rest assumes the starting point to be the origin of the cluster and all other hits radiate from that location.  </label>
+		</div>
+		<div>
+			<label> Chain hits together assumes the cluster starts from the starting location and flows linearly from there to the rest of the hits.</label>
+		</div>
+
+		<div>
+			<a class="btn btn-primary {% if flow_type == 'origin' %} disabled {% endif %}" href="{{urls.result_type.map_origin}}">Origin to rest</a>
+			<a class="btn btn-primary {% if flow_type == 'chain' %} disabled {% endif %}" href="{{urls.result_type.map_chain}}">Chain hits together</a>
+		</div>
 	</div>
 </div>
 <div class="card shadow mb-4 p-2">
