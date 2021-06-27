@@ -300,6 +300,7 @@ class DataHandler:
                     url = data + '&term={}'.format(query)
                 else:
                     url = data
+                url = url.replace("/#", "")
                 return url
             elif data_config.enrich_tidningar_URLs and 'tidningar.kb.se' in data:
                 newspaper_name = data.split("newspaper=")[1].split("&")[0]
