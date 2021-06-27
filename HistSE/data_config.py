@@ -109,6 +109,7 @@ cluster_field_mapping = {
         # 'id': 'ID',
         'count': 'Count',
         'timespan': 'Timespan in days',
+        'gap': 'Biggest gap within the cluster (years)',
         'locations': 'Unique locations',
         'average_length': 'Average length',
         'starting_title': 'Title',
