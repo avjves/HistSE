@@ -40,9 +40,9 @@ def chart_better(request, search_type, normalization_type, date_scope):
     data = data_handler.fetch_request_data(request)
     new_facets = []
     for facet in data['facets']:
-        if date_scope == 'year' and facet['field'] == 'year':
+        if date_scope == 'year' and (facet['field'] == 'year' or facet['field'] == 'starting_year'):
             new_facets.append(facet)
-        elif date_scope == 'month' and facet['field'] == 'month':
+        elif date_scope == 'month' and (facet['field'] == 'month' or facet['field'] == 'starting_month'):
             new_facets.append(facet)
     charter = Charter()
     labels, values, name = charter.chart(new_facets, normalization_type, date_scope, request)
