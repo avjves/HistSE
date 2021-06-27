@@ -716,7 +716,7 @@ class Charter:
                 break
             if facet['field'] == 'starting_month':
                 for option in facet['options']:
-                    month = int(option['name'])
+                    month = option['name']
                     value = int(option['value'])
                     month, value = self._enrich_label_data(month, value, normalization_type, date_scope, request)
                     month = "_".join(month.split("_")[::-1])
