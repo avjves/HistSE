@@ -1,5 +1,6 @@
 function search() {
-	const q = document.getElementById("query").value;
+	var q = document.getElementById("query").value;
+	q = q.replaceAll("+", "%2b")
 	const currentUrl = window.location.href;
 	const getParams = window.location.search.substr(1)
 	const splitParams = getParams.split("&");
