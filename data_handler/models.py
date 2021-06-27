@@ -284,27 +284,30 @@ class DataHandler:
         Enriches the received URL. 
         For now, adds the query term to Kansalliskirjasto URLs.
         """
-        if data_config.enrich_kansalliskirjasto_URLs and 'kansalliskirjasto' in data:
-            ## For now, assuming the user will have a text: query in the query field OR no : (No field specified = default search = text field)
-            if ":" not in parameters['q']:
-                # : not found in query, assuming everything in the query field is the desired highlight.
-                url = data + '&term={}'.format(parameters['q'])
-            elif "text:" in parameters['q']:
-                # text: found in the query. Attempting two things: 1. see if the q is wrapped in quotes or 2. take first word
-                query = parameters['q'].split("text:", 1)[1]  
-                if query[0] == '"': # Wrapped in quotes? Probably
-                    query = query.split('"')[1]
+        try:
+            if data_config.enrich_kansalliskirjasto_URLs and 'kansalliskirjasto' in data:
+                ## For now, assuming the user will have a text: query in the query field OR no : (No field specified = default search = text field)
+                if ":" not in parameters['q']:
+                    # : not found in query, assuming everything in the query field is the desired highlight.
+                    url = data + '&term={}'.format(parameters['q'])
+                elif "text:" in parameters['q']:
+                    # text: found in the query. Attempting two things: 1. see if the q is wrapped in quotes or 2. take first word
+                    query = parameters['q'].split("text:", 1)[1]  
+                    if query[0] == '"': # Wrapped in quotes? Probably
+                        query = query.split('"')[1]
+                    else:
+                        query = query.split(" ")[0]
+                    url = data + '&term={}'.format(query)
                 else:
-                    query = query.split(" ")[0]
-                url = data + '&term={}'.format(query)
+                    url = data
+                return url
+            elif data_config.enrich_tidningar_URLs and 'tidningar.kb.se' in data:
+                newspaper_name = data.split("newspaper=")[1].split("&")[0]
+                url = data.replace(newspaper_name, newspaper_name.upper())
+                return url
             else:
-                url = data
-            return url
-        elif data_config.enrich_tidningar_URLs and 'tidningar.kb.se' in data:
-            newspaper_name = data.split("newspaper=")[1].split("&")[0]
-            url = data.replace(newspaper_name, newspaper_name.upper())
-            return url
-        else:
+                return data
+        except:
             return data
 
     def _format_current_sort_option(self, parameters):
