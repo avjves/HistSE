@@ -38,6 +38,7 @@ available_cluster_facets = [
         {'field': 'starting_country', 'name': 'Starting country', 'visible': True},
         {'field': 'starting_location', 'name': 'Starting location', 'visible': True},
         {'field': 'starting_year', 'name': 'Starting year of apperance', 'facet_type': 'range_selector', 'increment': 10, 'visible': True},
+        {'field': 'starting_month', 'name': 'Starting month of apperance', 'facet_type': 'range_selector', 'increment': 10, 'visible': False},
         {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}, 'visible': True},
         {'field': 'out_city', 'name': 'Port city', 'visible': True},
         {'field': 'out_country', 'name': 'Port country', 'visible': True},
