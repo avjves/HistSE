@@ -11,6 +11,7 @@ Contains all data related configs.
 ####
 
 enrich_kansalliskirjasto_URLs = True
+enrich_tidningar_URLs = True
 enrich_normalized_chart_values = True
 enrich_map_coordinates = True
 
