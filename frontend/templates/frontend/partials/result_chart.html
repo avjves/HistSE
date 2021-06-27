@@ -3,9 +3,8 @@
 	<div class="">
 
 		<div>
-		<label> Change whether to normalize the values on the amount of characters per year.</label>
+		<label> Change whether to normalize the values on the amount of characters in the data per year.</label>
 		</div>
-		<label> NOTE: The amount of characters per year might not properly reflect the amount of literature per year. The amount of data we had available after the year 1905 is drastically reduced.</label>
 		<div>
 			<a class="btn btn-primary {% if normalization_type == 'absolute' %} disabled {% endif %}" href="{{urls.result_type.charts_norm_absolute}}">Absolute values</a>
 			<a class="btn btn-primary {% if normalization_type == 'normalized' %} disabled {% endif %}" href="{{urls.result_type.charts_norm_normalized}}">Normalized values</a>
