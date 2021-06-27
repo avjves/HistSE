@@ -34,14 +34,14 @@ skipped_metadata_fields = {'first_text'}
 
 available_cluster_facets = [
         # {'field': 'starting_title', 'name': 'Starting title'},
-        {'field': 'starting_country', 'name': 'Starting country'},
-        {'field': 'starting_location', 'name': 'Starting location'},
-        {'field': 'starting_year', 'name': 'Starting year of apperance', 'facet_type': 'range_selector', 'increment': 10},
-        {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}},
-        {'field': 'out_city', 'name': 'Port city'},
-        {'field': 'out_country', 'name': 'Port country'},
-        {'field': 'in_city', 'name': 'Incoming city'},
-        {'field': 'in_country', 'name': 'Incoming country'},
+        {'field': 'starting_country', 'name': 'Starting country', 'visible': True},
+        {'field': 'starting_location', 'name': 'Starting location', 'visible': True},
+        {'field': 'starting_year', 'name': 'Starting year of apperance', 'facet_type': 'range_selector', 'increment': 10, 'visible': True},
+        {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}, 'visible': True},
+        {'field': 'out_city', 'name': 'Port city', 'visible': True},
+        {'field': 'out_country', 'name': 'Port country', 'visible': True},
+        {'field': 'in_city', 'name': 'Incoming city', 'visible': True},
+        {'field': 'in_country', 'name': 'Incoming country', 'visible': True},
         ]
 
 available_hit_sort_options = [
