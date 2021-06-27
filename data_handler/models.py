@@ -53,7 +53,7 @@ class DataHandler:
         parameters[data_type]['hl'] = 'false'
         parameters[data_type]['start'] = 0
         parameters[data_type]['rows'] = 1000
-        parameters[data_type]['fl'] = ",".join(fields)
+        parameters[data_type]['fl'] = fields
         total_results = 0
         found_results = 0
         all_data = {}
@@ -65,14 +65,14 @@ class DataHandler:
 
                 if field_override:
                     fields = hit_field_mapping.keys() if field_override == 'hits' else cluster_field_mapping.keys()
-                else:
-                    fields = hit_field_mapping.keys() if data_type == 'hits' else cluster_field_mapping.keys()
+                # else:
+                    # fields = hit_field_mapping.keys() if data_type == 'hits' else cluster_field_mapping.keys()
 
                 for field in fields:
                     all_data[field] = all_data.get(field, [])
                     all_data[field].append(result.get(field, None))
 
-            if not found_results:
+            if not data:
                 break
             if found_results > 50000: break
         return all_data
@@ -814,32 +814,31 @@ class Mapper:
         csv_data = [['id', 'name', 'lat', 'lon']]
         dates = data['date']
         locations = data['location']
+        countries = data['country']
+        print(data)
         coordinates = data['coordinates']
-        dates, locations, coordinates = [list(a) for a in zip(*sorted(zip(dates, locations, coordinates)))]
+        dates, locations, countries, coordinates = [list(a) for a in zip(*sorted(zip(dates, locations, countries, coordinates)))]
         if self.flow_type == 'origin':
             date = dates.pop(0)
             location = locations.pop(0)
+            country = countries.pop(0)
             coordinate_pair = coordinates.pop(0)
-            if location == 'OUT OUF SCOPE': return csv_data
-            # lat, lng = self._get_location_coordinates(location)
-            lng, lat = coordinate_pair
+            lat, lng = self._enrich_location_coordinates(location, country, coordinate_pair)
             csv_data.append([location, location, lat, lng])
             found_locations = set([location])
-            for (date, location, coordinate_pair) in zip(dates, locations, coordinates):
+            for (date, location, country, coordinate_pair) in zip(dates, locations, countries, coordinates):
                 if location not in found_locations:
                     found_locations.add(location)
-                    if location == 'OUT OF SCOPE': continue
-                    # lat, lng = self._get_location_coordinates(location)
-                    lng, lat = coordinate_pair
+                    lat, lng = self._enrich_location_coordinates(location, country, coordinate_pair)
                     if not lat: continue
                     csv_data.append([location, location, lat, lng])
             return csv_data
         elif self.flow_type == 'chain':
             found_locations = set()
-            for (date, location, coordinate_pair) in zip(dates, locations, coordinates):
+            for (date, location, country, coordinate_pair) in zip(dates, locations, countries, coordinates):
                     if location not in found_locations:
                         found_locations.add(location)
-                        lng, lat = coordinate_pair
+                        lat, lng = self._enrich_location_coordinates(location, country, coordinate_pair)
                         csv_data.append([location, location, lat, lng])
             return csv_data
         else:
@@ -851,3 +850,17 @@ class Mapper:
         if not loc: return None, None
         print(loc)
         return loc.latitude, loc.longitude
+
+    def _enrich_location_coordinates(self, city, country, coordinate_pair):
+        """
+        Returns [latitude, longitude] for a given city in a given country.
+        """
+        if data_config.enrich_map_coordinates:
+            from data_handler.data_enrichment.location_coordinates import location_coordinates
+            key = f'{city}-{country}'
+            if key in location_coordinates:
+                return location_coordinates[key]
+            else:
+                return coordinate_pair
+        else:
+            return coordinate_pair

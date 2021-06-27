@@ -60,7 +60,7 @@ def map_data(request, search_type, flow_type, data_type):
     data_handler = DataHandler(search_type, 'map')
     if search_type != 'cluster':
         return HttpResponse(status=501)
-    data = data_handler.fetch_all_data(request, fields=['date, location, coordinates'], data_type='hits')
+    data = data_handler.fetch_all_data(request, fields=['date', 'location', 'country', 'coordinates'], data_type='hits')
     mapper = Mapper(flow_type, data_type)
     csv_data = mapper.format_map_data(data)
     response = HttpResponse(content_type='text/csv')
