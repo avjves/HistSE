@@ -29,7 +29,7 @@ class DataHandler:
         self.result_type = result_type
         self.extra_args = extra_args
         self.hit_interactor = SolrInteractor(core='swe_v10', use_cache=True)
-        self.cluster_interactor = SolrInteractor(core='swe_v10_clusters', use_cache=True)
+        self.cluster_interactor = SolrInteractor(core='swe_v11_clusters', use_cache=True)
 
     def fetch_request_data(self, request):
         """
