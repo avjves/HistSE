@@ -7,6 +7,7 @@ and asks a Interactor to fetch the data.
 import json
 import html
 from operator import itemgetter
+from natsort import natsorted
 from geopy import geocoders
 
 from django.conf import settings
@@ -688,7 +689,7 @@ class Charter:
                     year, value = self._enrich_label_data(year, value, normalization_type, date_scope, request)
                     values.append([year, value])
                 if values:
-                    values.sort(key=itemgetter(0))
+                    values = natsorted(values, key=lambda x: x[0])
                     labels, values = list(zip(*values))
                     name = '# of hits per year'
                 break
@@ -699,7 +700,7 @@ class Charter:
                     year, value = self._enrich_label_data(year, value, normalization_type, date_scope, request)
                     values.append([year, value])
                 if values:
-                    values.sort(key=itemgetter(0))
+                    values = natsorted(values, key=lambda x: x[0])
                     labels, values = list(zip(*values))
                     name = '# of clusters starting per year'
                 break
@@ -711,7 +712,7 @@ class Charter:
                     month = "_".join(month.split("_")[::-1])
                     values.append([month, value])
                 if values:
-                    values.sort(key=itemgetter(0))
+                    values = natsorted(values, key=lambda x: x[0])
                     labels, values = list(zip(*values))
                     name = '# of hits per month'
                 break
@@ -723,7 +724,7 @@ class Charter:
                     month = "_".join(month.split("_")[::-1])
                     values.append([month, value])
                 if values:
-                    values.sort(key=itemgetter(0))
+                    values = natsorted(values, key=lambda x: x[0])
                     labels, values = list(zip(*values))
                     name = '# of clusters starting per month'
                 break
