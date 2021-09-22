@@ -1,135 +1,158 @@
 <div>
-	<h2> WORK IN PROGRESS </h2>
+
 	<p>
-		These are instructions designed to make the searching process more fluid. </br >
-		In these instructions two terms will be used frequently:
+		This search interface uses <i>Solr</i> as backend, therefore it accepts everything that <i>Solr</i> does as search queries.</br >
 	</p>
 
-<p>
-- hit: A single instance of a passage being repeated in the dataset. A single hit will be a passage from page of a issue in the dataset. A single page may contain mulitple hits, though they're generally part of different clusters.
-<br />
-- cluster: A group of hits that all share the same (or similar enough) passage.
-</p>
-
-This search interface uses Solr as backend, therefore for the search terms it accepts everything that solr does.
-<br />
-Below are list of all available fields for searching and then some examples that show how some different search terms can be combined to get more out of the engine.
-
-To search for a word, you can just type word into the search bar and the search engine will attempt to find hits with that word in its passage. When doing simple searches for a single word you can just use the word alone, but you can
-<br />
-also specify a field (which is also necessary for some more advanced searches). E.g. typing text:word into the search field will attempt to find all passages (field is called text) with the word 'word' in it. The different fields are 
-<br />
-shown below. The searchable fields depend on whether you're searching for hits or clusters. To search for clusters, you must specify it from the 'advanced search'.
+		In these instructions two terms will be used frequently:
+<li>
+hit - A single instance of a passage being repeated in the dataset. A single hit will be a passage from page of a issue in the dataset. A single page may contain mulitple hits, though they're generally part of different clusters.
+</li>
+<li>
+cluster - A group of hits that all share the same (or similar enough) passage.
+</li>
 
 <br />
+To search for a word, you can type word into the search bar and the search engine will find hits with that word in its passage. 
 <br />
+When doing simple searches for a single word you can use the word alone, but you can also specify a field <i>(which is also necessary for some more advanced searches)</i>. 
 <br />
-Fields:
+E.g. typing <i>text:word</i> into the search field will find hits that contain the word <i>word</i> in the field <i>text</i>. 
+<br />
 
 <br />
-Available fields when searching for hits:
+The available fields depend on whether you're searching for hits or clusters. To search for clusters, you must specify it from the <i>advanced search</i>.
 <br />
-	cluster_id - Specifies which cluster this hit is part of. Can be used to find hits from the same cluster as some another hit.
+Below is list of all available fields for searching, followed by examples that show how some different search terms can be combined for more advanced queries.
 <br />
-	country - Country of the issue.
 <br />
-	date - Full date of the issue.
+<b>Available fields when searching for hits:</b>
 <br />
-	doc_id - The exact ID of the page. This can be used to find all hits in a given page.
+<b>cluster_id</b> - Specifies this hit's cluster.
 <br />
-	length - The length of the hit.
+	<b>country</b> - Country of the issue.
 <br />
-	location - The city of the issue.
+	<b>date</b> - Full date of the issue.
 <br />
-	text - The text of the hit.
+	<b>doc_id</b> - The exact ID of the page. 
 <br />
-	title - The title of the issue.
+	<b>length</b> - The length of the hit.
 <br />
-	year - Year of the issue.
+	<b>location</b> - The city of the issue.
+<br />
+	<b>text</b> - The text of the hit.
+<br />
+	<b>title</b> - The title of the issue.
+<br />
+	<b>year</b> - Year of the issue.
 <br />
 
 <br />
 	
-Available fields when searching for clusters:
+<b>Available fields when searching for clusters:</b>
 <br />
-	all_countries - All countries the cluster spread to.
+	<b>all_countries</b> - All countries the cluster spread to.
 <br />
-	all_locations - All cities the cluster spread to.
+	<b>all_locations</b>- All cities the cluster spread to.
 <br />
-	average_length - The average length of all hits in the cluster.
+	<b>average_length</b> - The average length of all hits in the cluster.
 <br />
-	cluster_id - The ID of the cluster.
+	<b>cluster_id</b> - The ID of the cluster.
 <br />
-	count - The count of unique hits in the cluster.
+	<b>count</b> - The count of unique hits in the cluster.
 <br />
-	ending_country - The country of the last hit in the cluster.
+	<b>ending_country</b>  - The country of the last hit in the cluster.
 <br />
-	ending_date - The date of the last hit in the cluster.
+	<b>ending_date</b>  - The date of the last hit in the cluster.
 <br />
-	ending_location - The city of the last hit in the cluster.
+	<b>ending_location</b>  - The city of the last hit in the cluster.
 <br />
-	first_text - The text of the first hit in the cluster.
+	<b>first_text</b>  - The text of the first hit in the cluster.
 <br />
-	gap - The biggest gap in the cluster, i.e. the maximum difference in publishing date of two subsequent hits.
+	<b>gap</b> - The biggest gap in the cluster, i.e. the maximum difference in publishing date of two subsequent hits.
 <br />
-	locations - The amount of different unique locations in the cluster.
+	<b>locations</b> - The amount of different unique locations in the cluster.
 <br />
-	starting_country - The country of the first hit in the cluster.
+	<b>starting_country</b>  - The country of the first hit in the cluster.
 <br />
-	starting_date - The date of the first hit in the cluster.
+	<b>starting_date</b>  - The date of the first hit in the cluster.
 <br />
-	starting_location - The city of the first hit in the cluster.
+	<b>starting_location</b>  - The city of the first hit in the cluster.
 <br />
-	starting_year - The year of the first hit in the cluster.
+	<b>starting_year</b>  - The year of the first hit in the cluster.
 <br />
-	in_city -  The incoming city of this cluster.
+	<b>in_city</b>  -  The incoming city of this cluster.
 <br />
-	in_country - The incoming country of this cluster.
+	<b>in_country</b>  - The incoming country of this cluster.
 <br />
-	in_date - Upcoming.
+	<b>in_date</b>  - Upcoming.
 <br />
-	out_city - The port city of this cluster.
+	<b>out_city</b>  - The port city of this cluster.
 <br />
-	out_country - The port country of this cluster.
+	<b>out_country</b>  - The port country of this cluster.
 <br />
-	out_date - Upcoming.
+	<b>out_date</b>  - Upcoming.
 <br />
-	timespan - The amount of days between the first and last hit in the cluster.
+	<b>timespan</b> - The amount of days between the first and last hit in the cluster.
 <br />
-	titles - The amount of different unique titles in the cluster.
+	<b>titles</b> - The amount of different unique titles in the cluster.
 <br />
-	virality_score - The virality score of the cluster.
+	<b>virality_score</b>  - The virality score of the cluster.
 <br />
 	
 <br />
 
 <br />
-Search instructions:
+<h5><b>Term instructions:</b></h5>
 
 <br />
-Solr has its own query language. Here are some of the more common ways to construct your queries.
+This engine uses Solr's default query parser, lucene.
+<br />
+Below are some of the most common terms that can be used.
+<br />
+More info can be found on Solr's documentation <a href="https://solr.apache.org/guide/6_6/the-standard-query-parser.html">here.</a>
+<br />
+<br />
 
+<h5>Boolean</h5>
+<i>+text:word</i> -- the word 'word' must appear in the <i>text</i> field of the hit.
 <br />
-+text:word -- the word 'word' _must_ appear in the text field of the hit.
+<i>-text:word</i> -- the word 'word' must not appear in the <i>text</i> field of the hit.
 <br />
--text:word -- the word 'word' must not appear in the text field of the hit.
-<br />
-
 <br />
 These two can also be combined:
 <br />
-+text:word -text:cat - The word 'word' must appear in the text and the world 'cat' can not.
+
+<i>+text:word -text:cat</i> - The word <i>word</i> must appear in the <i>text</i> field and the world <i>cat</i> must not.
 <br />
 
 <br />
-Different solr terms are separated using whitespace, so if you want to search for a multi word phrase, you must wrap it to quotation marks:
+<h5> Phrase search </h5>
+Different solr terms are separated using whitespace, so if you want to search for a multi word phrase, you must wrap it in quotation marks:
 <br />
-text:"this is a word" - "This is a word" must appear in the passage.
-<br />
-
-<br />
-Fuzzy...
+<i>text:"this is a word"</i> - <i>"This is a word"</i> must appear in the passage.
 <br />
 
 <br />
+<h5>Fuzzy matching</h5>
+Solr can perform fuzzy matching, where words that are very similar to the query word are accepted.
+<br />
+<i>text:dog~</i> - Words that are similar to dog are accepted. E.g. dag.
+<br />
+This can be useful to find hits in the database, as sometimes the OCR process may have degraded the quality so that exact matches arent sufficient anymore.
+<br />
+<br />
+
+<h5>Range queries:</h5>
+<i>count:[50 TO *]</i> - Shows clusters that have more than 50 hits. <br />
+<i>locations:[4 TO 5]</i> - Shows clusters that have spread to 4 or 5 different unique locations. 
+<br />
+<br />
+<h5> Wildcards:</h5>
+<i>word*</i> - Search for words that start with <i>word</i> and then any possible endings.
+<br />
+<i>word?</i> - Search for word <i>word</i> where there is one extra character at the end.
+<br />
+<br />
+<b> Real examples queries: </b>
 </div>
