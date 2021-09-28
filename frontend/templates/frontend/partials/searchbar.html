@@ -1,7 +1,7 @@
 <div class="row justify-content-md-center">
 	<div class="col-xl-4">
 		<div class="card shadow mb-4 border-left-primary">
-			<form class="d-none d-sm-inline-block form-inline ml-md-3 my-md-0 navbar-search" onsubmit="search();return false">
+			<form class="d-sm-inline-block form-inline ml-md-3 my-md-0 navbar-search" onsubmit="search();return false">
 				<div class="row input-group">
 					<input id="query" type="text" class="form-control bg-light border-0 small" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" value="{{ parameters.q|default_if_none:" " }}" />
 					<button class="btn btn-primary border-0" role="button" onclick="search()">
