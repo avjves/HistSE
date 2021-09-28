@@ -7,8 +7,17 @@
 }
 
 @media screen and (min-width: 0px) and (max-width: 319px) {
-    html {
-    	font-size: 0.35rem;
+
+    .navbar-brand, .navbar-collapse {
+	font-size: 0.70rem;
+    }
+
+    .navbar-toggler-icon  {
+	font-size: 0.5rem;
+    }
+
+    .wrapper {
+    	font-size: 1.1rem;
     }
 
     .navbar-image {
@@ -20,8 +29,12 @@
 
 @media screen and (min-width: 319px) and (max-width: 480px) {
 
-    .navbar-brand, .navbar-collapse, .navbar-toggler-icon {
-	font-size: 0.7rem;
+    .navbar-brand, .navbar-collapse {
+	font-size: 0.70rem;
+    }
+
+    .navbar-toggler-icon  {
+	font-size: 0.5rem;
     }
 
     .wrapper {

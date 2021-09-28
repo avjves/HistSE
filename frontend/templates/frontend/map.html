@@ -2,15 +2,16 @@
 <!doctype html>
 <html translate="no">
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 		<title> Swedish-language press as a cultural mediator, 1771–1918</title>
 		{% include "frontend/partials/stylesheets.html" %}
 		{% include "frontend/partials/scripts.html" %}
 	</head>
 	<body>
-		<div id="wrapper">
+		{% include "frontend/partials/navbar.html" %}
+		<div class="wrapper" id="wrapper">
 			<div id="content-wrapper" class="d-flex flex-column">
 				<div id="content">
-					{% include "frontend/partials/navbar.html" %}
 					<div class="container-fluid">
 						{% include "frontend/partials/searchbar.html" %}
 						<div class="row justify-content-md-center">
