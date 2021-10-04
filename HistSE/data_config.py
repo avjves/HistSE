@@ -123,6 +123,8 @@ cluster_field_mapping = {
         'all_locations': 'All unique locations',
         'all_countries': 'All unique countries',
         'crossed': 'Span across multiple countries',
+        'out_date': 'Port date',
+        'in_date': 'Incoming date',
         'out_city': 'Port city',
         'out_country': 'Port country',
         'in_city': 'Incoming city',

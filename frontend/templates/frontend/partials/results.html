@@ -20,6 +20,10 @@
 								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 								{% elif field == 'ending_date' %}
 								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+								{% elif field == 'in_date' %}
+								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+								{% elif field == 'out_date' %}
+								<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 								{% else %}
 								<span>{{ value }}</span>
 								{% endif %}
@@ -59,6 +63,10 @@
 											{% elif field == 'virality_score' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_number }}{% endfor %}</span>
 											{% elif field == 'ending_date' %}
+											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+											{% elif field == 'out_date' %}
+											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
+											{% elif field == 'in_date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
 											{% elif field == 'date' %}
 											<span>{% for val in value|show_em:field %}{{ val|prettify_date }}{% endfor %}</span>
