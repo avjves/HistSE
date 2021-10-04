@@ -1,0 +1,227 @@
+<br />
+<h4><b>Guidelines for the database</b></h4>
+<br />
+<br />
+<u>What is text reuse? </u>
+
+<br />
+<br />
+In this database, text reuse refers to different forms of textual repetition that can be traced in the press. This repetition includes direct quotations and other kinds of textual overlaps, such as intentional or unintentional borrowing. Until the 1880s, the journalistic field was not regulated by copyright agreements, and there were no limitations for copying and recycling information. After that, too, recycling has remained an essential practice in the press. In addition to copying, the database includes passages of text overlap that result from various recurring features of the press, such as notifications or ads. The material contains cases where newspapers have shared each other's contents but also, for example, circulars and letters sent to several papers simultaneously. 
+
+<br />
+<br />
+A fundamental but relatively neglected feature of newspapers of the period was their cut-and-paste quality, or, in the parlance of our times: their shared content. To this can be added a style of debate with extensive quoting as well as more or less widespread advertisements and campaign texts. In other words, to a substantial extent, text items travelled from one paper to the next. Sometimes it resulted in long chains or ramifications spreading over large geographical areas, sometimes for shorter distances. Sometimes fast, sometimes slower (which, of course, are relative expressions with the developing printing press and the modes of transportation it depended on). With the right digital methods, these information flows in time and space can be mapped and analysed.
+
+<br />
+<br />
+In constructing the database at hand, the project has first gathered digitised Swedish-language newspapers and journals and then processed the material with text reuse detection software. The database consists of repeated texts and text passages. We expect to add more material to the database by January 2023.
+
+
+<br />
+<br />
+<u>The data</u>
+
+<br />
+<br />
+The database is based on all newspapers published in Finland from 1771 to 1918, and a large proportion of newspapers published and digitised in Sweden from 1645 to 1906. This material constitutes the bulk of our corpus, which is also supplemented with digitised magazines from the Swedish Language Bank's collection. In this way, the research material has been extended until 1918. For text reuse detection, we had in total more than five million pages of digitised content, 1.79 million pages from Finland and 3.24 million pages from Sweden. The database includes texts from over 1100 titles published on c. 150 locations.
+
+<br />
+<br />
+The Finnish material consists of all published Swedish-language newspapers and journals before 1918. The material is available at the digital collection of the National Library of Finland. The OCR’d corpora are downloadable at the Language Bank of Finland (<a href="https://www.kielipankki.fi/language-bank/"> https://www.kielipankki.fi/language-bank/</a>). The content can also be consulted at the Digital Collections of the National Library at <a href="https://digi.kansalliskirjasto.fi/etusivu?set_language=en">https://digi.kansalliskirjasto.fi/etusivu?set_language=en</a>.
+
+
+<br />
+<br />
+Text passages in the Swedish press that are part of this database are extracted from newspapers that can also be found in the database Svenska dagstidningar (<a href="tidningar.kb.se">tidningar.kb.se</a>) of the Swedish National Library. It is important to note that the digitisation of the Swedish newspaper press is still an ongoing project which can be followed here: <a href="https://feedback.blogg.kb.se/forums/topic/digitaliserade-dagstidningar/">https://feedback.blogg.kb.se/forums/topic/digitaliserade-dagstidningar/</a>. At the time of the processing constituting the current database, approximately half of the Swedish newspaper collection had been digitised. 
+
+<br />
+<br />
+The material from the Swedish National Library has been downloaded through its API (<a href="https://github.com/Kungbib/kblab">https://github.com/Kungbib/kblab</a>). The content also includes Swedish-American papers from the Minnesota Historical Society, and we have taken these materials into account. Therefore, the database can also give insights into how news items spread between Sweden, Finland and the US.
+
+<br />
+<br />
+It is essential to realise that newspapers and journals have historically sometimes been classified quite arbitrarily. What we today might distinctly perceive as a journal is sometimes digitised and found in Svenska dagstidningar, while in other cases, newspapers classified as journals, unfortunately, fall outside of the digitisation project. Any close readings and case studies can thus benefit from an extra search in the national collections. 
+
+<br />
+<br />
+<u>The method</u>
+<br />
+<br />
+
+The text reuse detection method applied in this project is based on the National Center for Biotechnology Information Basic Local Alignment Search Tool (NCBI BLAST). This software was initially developed for matching biological sequences, but it can also be used for tracing duplicated text passages from a corpus of scanned and OCR-recognized newspapers and journals. This application of BLAST has been realised by the researchers of the Department of Future Technologies, University of Turku. For more information on the technical details of BLAST and the processing of data, see Vesanto et al. 2017; Salmi et al. 2021. To avoid boilerplate results in the reuse chains, the minimum length of passages was set to 300 characters. The original OCR data is not perfectly segmented into articles, so elements such as page breaks, pictures (etc.) in the original image can cause multiple clusters of similar passages. Therefore, the absolute number of found passages does not necessarily reflect the actual level of reuse.
+
+<br />
+<br />
+<u>Features of the database</u>
+
+<br />
+<br />
+The database allows free searches into the detected text reuse cases. It is possible to search individual hits and clusters. A hit is a single instance of a passage being repeated in the dataset. A single hit will be a passage from the page of an issue in the dataset. A single page may contain multiple hits, though they're generally part of different clusters. A cluster, in turn, refers to a group of hits that all share the same (or similar enough) passage. Hit search is useful when the user searches for a specific detail, cluster search when the user is interested in text circulation on a larger scale. Hit and cluster searches have different available search fields: please click the i-button beside the search box.
+
+<br />
+<br />
+After switching into clusters, the interface offers several features for filtering and organising data. On the left, the clusters can be limited through eight parameters: starting country, starting location, starting year of appearance, span across multiple countries, port city, port country, incoming city, and incoming country. From the perspective of information flows, “span across multiple countries” is important. If the user clicks “Yes”, the search will be limited into clusters where the text has been published in either two of the geographical regions (Finland, Sweden, the United States) or all of them. "Port city" means the last city of the reprint cluster in its country of the first printing, so the city (presumably) "sends" the text overseas. An "incoming city" then refers to the first printing location of a text in another country.
+
+<br />
+<br />
+In the interface of the database, there is also a sorting function on the right corner above. From there, the results can be organised by average length, starting and ending dates, starting country or location, number of unique locations, and starting year. It is also possible to sort by count, timespan (in days), gap (in years), and virality score. “Count” means how many hits there are in the cluster. “Timespan” refers to the length of the cluster in days. “Gap” in turn allows the user to find clusters where there are significant breaks in the chain of texts. If a text has been printed for the first time in 1800 and several times from 1877 onwards, there is a gap of 77 years.
+
+<br />
+<br />
+The virality score is a way of approaching how efficiently a particular text is circulated through the media network. For this value, we counted the number of unique newspapers/journals, the locations where the texts were printed, and how many days it took. The value is obtained by multiplying the number of newspapers/journals and locations by the inverse of the elapsed time. This penalises the value if the news has not spread geographically wide, or if the spreading took time (on the code, see <a href="https://github.com/avjves/cluster-viral-score">https://github.com/avjves/cluster-viral-score</a>). It is important to note that we left out those hits that clearly differ from the dates of other hits so that the calculated value is not distorted by, for example, single outliers. This can happen, for example, in a situation where the text has spread quickly during a short timeframe, but a single text was published long after. In this case, the cluster span is long, but the cluster spread has happened quickly. Finally, the values of all the clusters were normalised between 0–100 for clarity. It has to be added that we see virality score as a tool among many others: the values are not decisive in themselves, but they offer the user a tool for filtering material and perhaps finding interesting cases. This filtering can be combined with other features, for example by checking which were the most efficiently spread cross-border texts annually. 
+
+<br />
+<br />
+Using the database, including its map function, requires both caution and imagination. A text passage occurring first in, say, Helsinki on July 30, 1850, and then in Stockholm on August 10 and in Gothenburg on August 20, might mean that 1) they all reprint a letter or an ad that was sent to them, 2) all three newspapers independently quote a fourth newspaper (not included in the data set), 3) the Stockholm and Gothenburg editors were both subscribing to the Helsinki paper and quote directly from it, 4) the Gothenburg paper quotes the Stockholm paper which in turn quotes the Helsinki one, or 5) some combination of these scenarios. In other words, establishing the actual physical (or electrical) transportation of information requires more information. Sometimes this information can be found in the texts that these passages are part of, sometimes other sources need to be consulted, and often it is still not possible to determine. On the other hand, if the case in question is viewed in terms of an immaterial dissipation of content, something did indeed spread in time and space, from Helsinki via Stockholm to Gothenburg. Therefore and on the same note, terms like port city, incoming city and virality score, which are used in the database, must be employed with judgement; a literal understanding demands some backup information, while a metaphorical one might need some framing and explication.
+
+
+
+<br />
+<br />
+<u>Search instructions</u>
+<br />
+<br />
+{% include "frontend/partials/instructions.html" %}
+<!--<br />-->
+<!--This search interface uses Solr as backend, therefore it accepts everything that Solr does as search queries.-->
+<!--In these instructions two terms will be used frequently:-->
+<!--  hit - A single instance of a passage being repeated in the dataset. A single hit will be a passage from page of a issue in the dataset. A single page may contain mulitple hits, though they're generally part of different clusters.-->
+<!--  cluster - A group of hits that all share the same (or similar enough) passage.-->
+<!--To search for a word, you can type word into the search bar and the search engine will find hits with that word in its passage.-->
+<!--When doing simple searches for a single word you can use the word alone, but you can also specify a field (which is also necessary for some more advanced searches).-->
+<!--E.g. typing text:word into the search field will find hits that contain the word word in the field text.-->
+<!--<br />-->
+
+<!--The available fields depend on whether you're searching for hits or clusters. To search for clusters, you must specify it from the advanced search.-->
+<!--Below is list of all available fields for searching, followed by examples that show how some different search terms can be combined for more advanced queries.-->
+
+<!--<br />-->
+<!--Available fields when searching for hits:-->
+<!--cluster_id - Specifies this hit's cluster.-->
+<!--country - Country of the issue.-->
+<!--date - Full date of the issue.-->
+<!--doc_id - The exact ID of the page.-->
+<!--length - The length of the hit.-->
+<!--location - The city of the issue.-->
+<!--text - The text of the hit.-->
+<!--title - The title of the issue.-->
+<!--year - Year of the issue.-->
+
+<!--Available fields when searching for clusters:-->
+<!--all_countries - All countries the cluster spread to.-->
+<!--all_locations- All cities the cluster spread to.-->
+<!--average_length - The average length of all hits in the cluster.-->
+<!--cluster_id - The ID of the cluster.-->
+<!--count - The count of unique hits in the cluster.-->
+<!--crossed - true / false. True: if the cluster spanned across two or more countries.-->
+<!--ending_country - The country of the last hit in the cluster.-->
+<!--ending_date - The date of the last hit in the cluster.-->
+<!--ending_location - The city of the last hit in the cluster.-->
+<!--first_text - The text of the first hit in the cluster.-->
+<!--gap - The biggest gap in the cluster, i.e. the maximum difference in publishing date of two subsequent hits.-->
+<!--locations - The amount of different unique locations in the cluster.-->
+<!--starting_country - The country of the first hit in the cluster.-->
+<!--starting_date - The date of the first hit in the cluster.-->
+<!--starting_location - The city of the first hit in the cluster.-->
+<!--starting_year - The year of the first hit in the cluster.-->
+<!--in_city - The incoming city of this cluster.-->
+<!--in_country - The incoming country of this cluster.-->
+<!--in_date - Upcoming.-->
+<!--out_city - The port city of this cluster.-->
+<!--out_country - The port country of this cluster.-->
+<!--out_date - Upcoming.-->
+<!--timespan - The amount of days between the first and last hit in the cluster.-->
+<!--titles - The amount of different unique titles in the cluster.-->
+<!--virality_score - The virality score of the cluster.-->
+
+
+
+<!--Term instructions:-->
+
+<!--This engine uses Solr's default query parser, lucene.-->
+<!--Below are some of the most common terms that can be used.-->
+<!--More info can be found on Solr's documentation here.-->
+
+
+<!--Boolean-->
+<!--+text:word -- the word 'word' must appear in the text field of the hit.-->
+<!---text:word -- the word 'word' must not appear in the text field of the hit.-->
+
+<!--These two can also be combined:-->
+<!--+text:word -text:cat - The word word must appear in the text field and the world cat must not.-->
+
+
+<!--Phrase search-->
+<!--Different solr terms are separated using whitespace, so if you want to search for a multi word phrase, you must wrap it in quotation marks:-->
+<!--text:"this is a word" - "This is a word" must appear in the passage.-->
+
+
+<!--Fuzzy matching-->
+<!--Solr can perform fuzzy matching, where words that are very similar to the query word are accepted.-->
+<!--text:dog~ - Words that are similar to dog are accepted. E.g. dag.-->
+<!--This can be useful to find hits in the database, as sometimes the OCR process may have degraded the quality so that exact matches arent sufficient anymore.-->
+
+
+<!--Range queries:-->
+<!--count:[50 TO *] - Shows clusters that have more than 50 hits.-->
+<!--locations:[4 TO 5] - Shows clusters that have spread to 4 or 5 different unique locations.-->
+
+
+<!--Wildcards:-->
+<!--word* - Search for words that start with word and then any possible endings.-->
+<!--word? - Search for word word where there is one extra character at the end.-->
+
+
+<!--Real examples queries:-->
+
+<!--If you want to find and see all the hits and/or clusters, type: *:*-->
+
+<!--brand* AND Åbo-->
+<!--Finds hits or clusters with different forms of the word brand (for example, branden) and the word Åbo which occur in the same text-->
+
+<!--brand* AND Åbo NOT Brandenburg-->
+<!--Finds hits or clusters with different forms of the word brand (for example, branden) and the word Åbo but excludes the word Brandenburg-->
+
+<!--location:Mal*-->
+<!--Finds all hits from locations starting Mal-.-->
+
+<!--title:"Vårt Land"-->
+<!--Finds all hits for the paper Vårt Land and also all clusters, including hits from Vårt Land.-->
+
+<!--timespan:[* TO 10]-->
+<!--Finds clusters with a timespan from 0 to 10. This is preprints within the same day (0) to those within ten days.  -->
+
+<!--cluster_id:cluster_13180197-->
+<!--Finds a particular cluster.-->
+
+<!--count:[* TO 50]-->
+<!--Finds clusters with a count from 2 to 50. (The minimum count is 2, basically a text with one reprint.)-->
+
+<!--crossed:true AND count:[100 TO *]-->
+<!--Finds clusters that spanned two or more countries and with a count of 100 or more.-->
+
+<!--locations:[10 TO *]-->
+<!--Finds clusters which contain 10 or more printing locations.-->
+
+<!--all_locations:(Umeå AND Oulu)-->
+<!--Finds all clusters which have Umeå and Oulu in its printing locations.-->
+
+<!--all_locations:(Umeå OR Oulu)-->
+<!--Finds all clusters which have either Umeå or Oulu in their printing locations.-->
+
+<!--all_countries:(Finland AND Norway)-->
+<!--Finds all clusters which have been printed in both Finland and Norway.-->
+
+<!--all_countries:(Finland OR "United States")-->
+<!--Finds all clusters which have been printed in either Finland or in the United States.-->
+
+<!--Combinations:-->
+<!--in_city:Turku AND all_locations:(Oulu AND Vaasa)-->
+<!--Finds all clusters where the first printing in Finland occurred in Turku (incoming city) and that have Oulu and Vaasa among their printing locations.-->
+
+<!--virality_score: [90 TO 100]-->
+<!--Finds the clusters with the highest viral scores. The viral score is a number from 0 to 100. -->
+
+<!--gap:[100 TO *]-->
+<!--Finds clusters with reprints containing a largest time distance (a gap) of 100 years or more.-->
+

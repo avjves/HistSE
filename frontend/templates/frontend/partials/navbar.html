@@ -4,11 +4,13 @@
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
-	<div class="collapse navbar-collapse bg-custom shadow rounded" id="navbarNavAltMarkup">
+	<div class="collapse navbar-collapse bg-custom shadow rounded navbar-drop" id="navbarNavAltMarkup">
 		<div class="navbar-nav ml-2">
 			<a class="nav-item nav-link {% if current_site == 'index' %} active {% endif %}" href="/">Home <span class="sr-only">(current)</span></a>
 			<a class="nav-item nav-link {% if current_site == 'search' or current_site == 'chart' %} active {% endif %}" href="/hits/search">Advanced search</a>
-			<a class="nav-item nav-link {% if current_site == 'about_us' %} active {% endif %}" href="/about_us">About us</a>
+			<a class="nav-item nav-link {% if current_site == 'guidelines' %} active {% endif %}" href="/guidelines">Guidelines</a>
+			<a class="nav-item nav-link {% if current_site == 'credits' %} active {% endif %}" href="/credits">Credits</a>
+			<a class="nav-item nav-link {% if current_site == 'further_reading' %} active {% endif %}" href="/further_reading">Further reading</a>
 		</div>
 	</div>
 	<img class="navbar-image" src="{% static 'frontend/sls_logo_white.png' %}" style="height: 100%"/>

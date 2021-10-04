@@ -17,6 +17,15 @@ def updates(request):
 def aboutus(request):
     return render(request, 'frontend/aboutus.html', context={'current_site': 'about_us'})
 
+def guidelines(request):
+    return render(request, 'frontend/guidelines.html', context={'current_site': 'guidelines'})
+
+def credits(request):
+    return render(request, 'frontend/credits.html', context={'current_site': 'credits'})
+
+def further_reading(request):
+    return render(request, 'frontend/further_reading.html', context={'current_site': 'further_reading'})
+
 
 def search(request, search_type):
     print("GET params:", request.GET)

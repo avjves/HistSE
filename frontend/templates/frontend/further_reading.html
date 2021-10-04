@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+	<head>
+		<title>Text reuse in the Swedish-language press, 1645-1918</title>
+		{% include "frontend/partials/stylesheets.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="content-wrapper" class="d-flex flex-column">
+				<div id="content">
+					{% include "frontend/partials/navbar.html" %}
+
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-xl-6 col-s-12">
+								<div class="card shadow mb-4 border-left-secondary">
+									<div class="card body">
+										<div class="col mb-2">
+											<br />
+											<h5><b>Further reading</b></h5>
+											<br />
+											Aleksi Vesanto, Asko Nivala, Heli Rantala, Tapio Salakoski, Hannu Salmi &amp; Filip Ginter, Applying
+											BLAST to Text Reuse Detection in Finnish Newspapers and Journals, 1771–1910. Proceedings of
+											the 21st Nordic Conference of Computational Linguistics. Gothenburg, Sweden, 23–24 May 2017
+											(Linköping 2017),
+											<br />
+											<a href="http://www.ep.liu.se/ecp/133/010/ecp17133010.pdf">http://www.ep.liu.se/ecp/133/010/ecp17133010.pdf</a>
+											<br />
+											<br />
+											Hannu Salmi, Petri Paju, Heli Rantala, Asko Nivala, Aleksi Vesanto &amp; Filip Ginter, The reuse of
+											texts in Finnish newspapers and journals, 1771–1920: A digital humanities perspective. Historical
+											Methods: A Journal of Quantitative and Interdisciplinary History
+											Volume 54, 2021 - Issue 1,<br /><a href="https://doi.org/10.1080/01615440.2020.1803166">https://doi.org/10.1080/01615440.2020.1803166</a>
+										</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+
+		{% include "frontend/partials/scripts.html" %}
+
+	</body>
+</html>

@@ -1,0 +1,67 @@
+{% load static %}
+<!doctype html>
+<html>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+	<head>
+		<title>Text reuse in the Swedish-language press, 1645-1918</title>
+		{% include "frontend/partials/stylesheets.html" %}
+	</head>
+	<body>
+	{% include "frontend/partials/navbar.html" %}
+		<div id="wrapper">
+			<div id="content-wrapper" class="d-flex flex-column">
+				<div id="content">
+
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-xl-6">
+								<div class="card shadow mb-4 border-left-secondary">
+									<div class="card body">
+										<div class="col mb-2">
+											<br />
+											<h5><b>Credits</b></h5>
+											<br />
+											This database has been produced by the project <i>Informationsflöden över Östersjön: Svenskspråkig
+												press som kulturförmedlare 1771–1918</i>, <br>funded by the Society of Swedish Literature in Finland
+											(Svenska Literatursällskapet i Finland) in 2020–2022. 
+											<br />
+											More information on the project at
+											<a href="https://blogit.utu.fi/informationsfloden/">https://blogit.utu.fi/informationsfloden/</a>
+											<br />
+											<br />
+											The database and interface have been designed by:
+											<br />
+											Aleksi Vesanto
+											<br />
+											Petri Paju
+											<br />
+											Heli Rantala
+											<br />
+											Erik Edoff
+											<br />
+											Patrik Lundell
+											<br />
+											Jani Marjanen
+											<br />
+											Hannu Salmi
+											<br />
+											<br />
+											Suggested citation:
+											<br />
+											Vesanto, A., Paju, P., Rantala, H., Edoff, E., Lundell, P., Marjanen, J., Salmi, H., Text reuse in the Swedish-language press, 1645–1918: Database. <a href="https://textreuse.sls.fi/">https://textreuse.sls.fi/</a>, accessed day-month-year.
+											<br />
+										</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+
+		{% include "frontend/partials/scripts.html" %}
+
+	</body>
+</html>

@@ -6,7 +6,7 @@
 
 		In these instructions two terms will be used frequently:
 <li>
-hit - A single instance of a passage being repeated in the dataset. A single hit will be a passage from page of a issue in the dataset. A single page may contain mulitple hits, though they're generally part of different clusters.
+hit - A single instance of a passage being repeated in the dataset. A single hit will be a passage from page of an issue in the dataset. A single page may contain mulitple hits, though they're generally part of different clusters.
 </li>
 <li>
 cluster - A group of hits that all share the same (or similar enough) passage.
@@ -23,7 +23,7 @@ E.g. typing <i>text:word</i> into the search field will find hits that contain t
 <br />
 The available fields depend on whether you're searching for hits or clusters. To search for clusters, you must specify it from the <i>advanced search</i>.
 <br />
-Below is list of all available fields for searching, followed by examples that show how some different search terms can be combined for more advanced queries.
+Below is a list of all available fields for searching, followed by examples that show how some different search terms can be combined for more advanced queries.
 <br />
 <br />
 <b>Available fields when searching for hits:</b>
@@ -156,5 +156,119 @@ This can be useful to find hits in the database, as sometimes the OCR process ma
 <i>word?</i> - Search for word <i>word</i> where there is one extra character at the end.
 <br />
 <br />
-<b> Real examples queries: </b>
+<h5> Real examples queries: </h5>
+<br />
+If you want to find and see all the hits and/or clusters, type: *:*
+
+<br />
+<br />
+<i>brand* AND Åbo</i>
+<br />
+Finds hits or clusters with different forms of the word brand (for example, branden) and the word Åbo which occur in the same text
+
+<br />
+<br />
+<i>brand* AND Åbo NOT Brandenburg</i>
+<br />
+Finds hits or clusters with different forms of the word brand (for example, branden) and the word Åbo but excludes the word Brandenburg
+<br />
+<br />
+
+<i>location:Mal*</i>
+<br />
+Finds all hits from locations starting Mal-.
+<br />
+<br />
+
+<i>title:"Vårt Land"</i>
+<br />
+Finds all hits for the paper Vårt Land and also all clusters, including hits from Vårt Land.
+<br />
+<br />
+
+<i>timespan:[* TO 10]</i>
+<br />
+Finds clusters with a timespan from 0 to 10. This is preprints within the same day (0) to those within ten days.  
+<br />
+<br />
+
+<i>cluster_id:cluster_13180197</i>
+<br />
+Finds a particular cluster.
+<br />
+<br />
+
+<i>count:[* TO 50]</i>
+<br />
+Finds clusters with a count from 2 to 50. (The minimum count is 2, basically a text with one reprint.)
+<br />
+<br />
+
+<i>crossed:true AND count:[100 TO *]</i>
+<br />
+Finds clusters that spanned two or more countries and with a count of 100 or more.
+<br />
+<br />
+
+<i>locations:[10 TO *]</i>
+<br />
+Finds clusters which contain 10 or more printing locations.
+<br />
+<br />
+
+<i>all_locations:(Umeå AND Oulu)</i>
+<br />
+Finds all clusters which have Umeå and Oulu in its printing locations.
+<br />
+<br />
+
+<i>all_locations:(Umeå OR Oulu)</i>
+<br />
+Finds all clusters which have either Umeå or Oulu in their printing locations.
+<br />
+
+<br />
+<i>all_countries:(Finland AND Norway)</i>
+<br />
+Finds all clusters which have been printed in both Finland and Norway.
+<br />
+<br />
+
+<i>all_countries:(Finland OR "United States")</i>
+<br />
+Finds all clusters which have been printed in either Finland or in the United States.
+<br />
+<br />
+
+<i>starting_date:"1904-10-01T00:00:00Z"</i>
+<br />
+Finds clusters that started on 1 October 1904.
+
+<br />
+<br />
+<i>starting_date:[1804-10-01T00:00:00Z TO 1904-10-01T00:00:00Z]</i>
+<br />
+Finds clusters that have started between 1 October 1804 and 1 October 1904.
+
+<br />
+<br />
+<h5>Combinations:</h5>
+<i>in_city:Turku AND all_locations:(Oulu AND Vaasa)</i>
+<br />
+Finds all clusters where the first printing in Finland occurred in Turku (incoming city) and that have Oulu and Vaasa among their printing locations.
+<br />
+<br />
+
+<i>virality_score: [90 TO 100]</i>
+<br />
+Finds the clusters with the highest viral scores. The viral score is a number from 0 to 100. 
+<br />
+<br />
+
+<i>gap:[100 TO *]</i>
+<br />
+Finds clusters with reprints containing a largest time distance (a gap) of 100 years or more.
+<br />
+
+<br />
 </div>

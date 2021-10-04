@@ -69,8 +69,19 @@
 
 }
  
-@media screen and (min-width: 900px) and (max-width: 1080px) {
+@media screen and (min-width: 900px) and (max-width: 1200px) {
     html {
     	font-size: 1.0rem;
     }
+
+    .navbar-image {
+	display: none;
+    }
+
+}
+
+.navbar-drop {
+	margin-left: -16px;
+	padding-left: 20px;
+	margin-right: -16px;
 }
