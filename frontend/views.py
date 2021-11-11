@@ -81,7 +81,7 @@ def map_data(request, search_type, flow_type, data_type):
 
 def download(request, search_type):
     """
-    Sends the current request to user as a downloadable CSV.
+    Sends the current request to user as a downloadable TSV.
     """
     data_handler = DataHandler(search_type, 'download')
     data_exporter = DataExporter(data_handler=data_handler)

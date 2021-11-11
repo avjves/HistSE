@@ -69,9 +69,16 @@ class DataHandler:
                 # else:
                     # fields = hit_field_mapping.keys() if data_type == 'hits' else cluster_field_mapping.keys()
 
+
+
                 for field in fields:
-                    all_data[field] = all_data.get(field, [])
-                    all_data[field].append(result.get(field, None))
+                    if field == '*':
+                        for field in result.keys():
+                            all_data[field] = all_data.get(field, [])
+                            all_data[field].append(result.get(field))
+                    else:
+                        all_data[field] = all_data.get(field, [])
+                        all_data[field].append(result.get(field, None))
 
             if not data:
                 break
