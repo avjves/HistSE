@@ -49,3 +49,11 @@ function search() {
 	window.location = newUrl;
 }
 
+
+function showInfo() {
+	document.getElementById("helpOverlay").style.display = "block";
+}
+
+function hideInfo() {
+	document.getElementById("helpOverlay").style.display = "none";
+}
