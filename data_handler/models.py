@@ -29,8 +29,8 @@ class DataHandler:
         self.search_type = search_type
         self.result_type = result_type
         self.extra_args = extra_args
-        self.hit_interactor = SolrInteractor(core='swe_v13', use_cache=True)
-        self.cluster_interactor = SolrInteractor(core='swe_v12_clusters', use_cache=True)
+        self.hit_interactor = SolrInteractor(core='swe_v21', use_cache=True)
+        self.cluster_interactor = SolrInteractor(core='swe_v21_clusters', use_cache=True)
 
     def fetch_request_data(self, request):
         """
@@ -581,8 +581,9 @@ class DataHandler:
         # url = current_domain + self._generate_site_url(current_url_parameters, result_type='origin/map_data')
         loc_url = url.replace("/map", "/locations/map")
         flows_url = url.replace("/map", "/flows/map")
-        access_token = 'pk.eyJ1IjoiYXZqdmVzIiwiYSI6ImNrbHR4YmllYTBoZG4yb213cGNnbzZicHYifQ.vSaa0xMyKGztHbahyM6h2A'
-        flow_url = "https://flowmap.blue/from-url?flows={}&locations={}&mapbox.accessToken={}".format(flows_url, loc_url, access_token)
+        # access_token = 'pk.eyJ1IjoiYXZqdmVzIiwiYSI6ImNrbHR4YmllYTBoZG4yb213cGNnbzZicHYifQ.vSaa0xMyKGztHbahyM6h2A'
+        # flow_url = "https://flowmap.blue/from-url?flows={}&locations={}&mapbox.accessToken={}".format(flows_url, loc_url, access_token)
+        flow_url = "https://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
         return {'flow_map': flow_url}
         
 
@@ -877,6 +878,6 @@ class Mapper:
             if key in location_coordinates:
                 return location_coordinates[key]
             else:
-                return coordinate_pair
+                return coordinate_pair[::-1]
         else:
-            return coordinate_pair
+            return coordinate_pair[::-1]

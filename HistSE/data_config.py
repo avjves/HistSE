@@ -40,6 +40,7 @@ available_cluster_facets = [
         {'field': 'starting_year', 'name': 'Starting year of appearance', 'facet_type': 'range_selector', 'increment': 10, 'visible': True},
         {'field': 'starting_month', 'name': 'Starting month of appearance', 'facet_type': 'range_selector', 'increment': 10, 'visible': False},
         {'field': 'crossed', 'name': 'Span across multiple countries', 'option_names': {'true': 'Yes', 'false': 'No'}, 'visible': True},
+        {'field': 'multiple_starting_locations', 'name': 'Multiple starting locations', 'option_names': {'true': 'Yes', 'false': 'No'}, 'visible': True},
         {'field': 'out_city', 'name': 'Port city', 'visible': True},
         {'field': 'out_country', 'name': 'Port country', 'visible': True},
         {'field': 'in_city', 'name': 'Incoming city', 'visible': True},
@@ -116,13 +117,17 @@ cluster_field_mapping = {
         'starting_title': 'Title',
         'starting_date': 'Starting date',
         'ending_date': 'Ending date',
-        'ending_country': 'Ending Country',
+        'ending_country': 'Ending country',
         'starting_country': 'Country',
         'starting_location': 'First printing location',
         'starting_year': 'Starting year',
         'all_locations': 'All unique locations',
+        'all_titles': 'All unique titles',
         'all_countries': 'All unique countries',
+        'all_starting_locations': 'All starting locations',
+        'all_starting_countries': 'All starting countries',
         'crossed': 'Span across multiple countries',
+        'multiple_starting_locations': 'Multiple starting locations',
         'out_date': 'Port date',
         'in_date': 'Incoming date',
         'out_city': 'Port city',
@@ -132,5 +137,3 @@ cluster_field_mapping = {
         'virality_score': 'Virality score',
         'first_text': 'Text from the first hit',
 }
-
-

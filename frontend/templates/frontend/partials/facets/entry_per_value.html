@@ -76,7 +76,7 @@
 				}
 			}
 			{% if facet.options|length > 10 %}
-				document.getElementById("{{ facet.field }}_info").innerHTML = "Showing " + (start+1) + "-" + end + " out of " + cur + " options";
+				document.getElementById("{{ facet.field }}_info").innerHTML = "Showing " + (start+1) + "-" + end + " out of " + (cur + 1) + " options";
 			{% endif %}
 		}
 		var current_{{ facet.field }}_page = 0;
