@@ -69,6 +69,8 @@ Below is a list of all available fields for searching, followed by examples that
 <br />
 	<b>ending_location</b>  - The city of the last hit in the cluster.
 <br />
+	<b>ending_year</b>  - The year of the last hit in the cluster.
+<br />
 	<b>first_text</b>  - The text of the first hit in the cluster.
 <br />
 	<b>gap</b> - The biggest gap in the cluster, i.e. the maximum difference in publishing date of two subsequent hits.
@@ -87,20 +89,21 @@ Below is a list of all available fields for searching, followed by examples that
 <br />
 	<b>in_country</b>  - The incoming country of this cluster.
 <br />
-	<b>in_date</b>  - Upcoming.
+	<b>in_date</b>  - The date a text in a cluster appeared in a new country.
 <br />
 	<b>out_city</b>  - The port city of this cluster.
 <br />
 	<b>out_country</b>  - The port country of this cluster.
 <br />
-	<b>out_date</b>  - Upcoming.
+	<b>out_date</b>  - The date a text in a cluster left its original country of printing.
 <br />
 	<b>timespan</b> - The amount of days between the first and last hit in the cluster.
 <br />
 	<b>titles</b> - The amount of different unique titles in the cluster.
 <br />
-	<b>virality_score</b>  - The virality score of the cluster.
+	<b>virality_score</b> - The virality score of the cluster.
 <br />
+	<b>multiple_starting_locations</b> - true/false. False: the cluster has one starting location, True: The cluster includes texts that were first printed in multiple locations on the same day.
 	
 <br />
 
@@ -250,6 +253,21 @@ Finds clusters that started on 1 October 1904.
 <br />
 Finds clusters that have started between 1 October 1804 and 1 October 1904.
 
+
+<br />
+<br />
+<i>virality_score: [90 TO 100]</i>
+<br />
+Finds the clusters with the highest viral scores. The viral score is a number from 0 to 100. 
+
+<br />
+<br />
+<i>gap:[100 TO *]</i>
+<br />
+Finds clusters with reprints containing a largest time distance (a gap) of 100 years or more.
+<br />
+
+
 <br />
 <br />
 <h5>Combinations:</h5>
@@ -259,15 +277,18 @@ Finds all clusters where the first printing in Finland occurred in Turku (incomi
 <br />
 <br />
 
-<i>virality_score: [90 TO 100]</i>
+
+<i>multiple_starting_locations:True AND ending_location:Kokkola</i>
 <br />
-Finds the clusters with the highest viral scores. The viral score is a number from 0 to 100. 
+Finds clusters with texts that were first printed in more than one title and the last printing was by a newspaper in Kokkola.
 <br />
 <br />
 
-<i>gap:[100 TO *]</i>
+
+<i>starting_country:Finland AND in_city:Umeå</i>
 <br />
-Finds clusters with reprints containing a largest time distance (a gap) of 100 years or more.
+Finds clusters with a text that were first printed in Finland and moved to Sweden via Umeå.
+<br />
 <br />
 
 <br />

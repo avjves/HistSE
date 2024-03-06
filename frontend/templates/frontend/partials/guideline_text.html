@@ -14,8 +14,7 @@ A fundamental but relatively neglected feature of newspapers of the period was t
 
 <br />
 <br />
-In constructing the database at hand, the project has first gathered digitised Swedish-language newspapers and journals and then processed the material with text reuse detection software. The database consists of repeated texts and text passages. We expect to add more material to the database by January 2023.
-
+In constructing the database at hand, the project has first gathered digitised Swedish-language newspapers and journals and then processed the material with text reuse detection software. The database consists of repeated texts and text passages. We opened the first version of the database in October 2021. By the summer of 2023, we added much more material from Sweden, developed new search fields, and launched the updated database in August 2023.
 
 <br />
 <br />
@@ -23,7 +22,8 @@ In constructing the database at hand, the project has first gathered digitised S
 
 <br />
 <br />
-The database is based on all newspapers published in Finland from 1771 to 1918, and a large proportion of newspapers published and digitised in Sweden from 1645 to 1906. This material constitutes the bulk of our corpus, which is also supplemented with digitised magazines from the Swedish Language Bank's collection. In this way, the research material has been extended until 1918. For text reuse detection, we had in total more than five million pages of digitised content, 1.79 million pages from Finland and 3.24 million pages from Sweden. The database includes texts from over 1100 titles published on c. 150 locations.
+The database is based on all newspapers published in Finland from 1771 to 1918, and a large proportion of newspapers published and digitised in Sweden from 1645 to 1906. This material constitutes the bulk of our corpus, which is also supplemented with digitised magazines from the Swedish Language Bank's collection. In this way, the research material has been extended until 1918. For text reuse detection, we had in total more than seven and a half million pages of digitised content, 1.79 million pages from Finland and 5.71 million pages from Sweden. The database includes texts from over 1600 titles (1100 from present-day Sweden), from c. 180 locations (139 in present-day Sweden). 
+
 
 <br />
 <br />
@@ -32,7 +32,7 @@ The Finnish material consists of all published Swedish-language newspapers and j
 
 <br />
 <br />
-Text passages in the Swedish press that are part of this database are extracted from newspapers that can also be found in the database Svenska dagstidningar (<a href="tidningar.kb.se">tidningar.kb.se</a>) of the Swedish National Library. It is important to note that the digitisation of the Swedish newspaper press is still an ongoing project which can be followed here: <a href="https://feedback.blogg.kb.se/forums/topic/digitaliserade-dagstidningar/">https://feedback.blogg.kb.se/forums/topic/digitaliserade-dagstidningar/</a>. At the time of the processing constituting the current database, approximately half of the Swedish newspaper collection had been digitised. 
+Text passages in the Swedish press that are part of this database are extracted from newspapers that can also be found in the database Svenska dagstidningar (<a href="tidningar.kb.se">tidningar.kb.se</a>) of the Swedish National Library. At the national library, they finished a large-scale project for the digitisation of the Swedish newspaper press in the spring 2023. (see: <a href="https://feedback.blogg.kb.se/forums/topic/digitalisering-och-tillgangliggorande-av-svenska-dagstidningar-1734-1906/">https://feedback.blogg.kb.se/forums/topic/digitalisering-och-tillgangliggorande-av-svenska-dagstidningar-1734-1906/</a>) In the current database, we were able to include most of the new, widely expanded Swedish newspaper collection.
 
 <br />
 <br />
@@ -48,7 +48,7 @@ It is essential to realise that newspapers and journals have historically someti
 <br />
 <br />
 
-The text reuse detection method applied in this project is based on the National Center for Biotechnology Information Basic Local Alignment Search Tool (NCBI BLAST). This software was initially developed for matching biological sequences, but it can also be used for tracing duplicated text passages from a corpus of scanned and OCR-recognized newspapers and journals. This application of BLAST has been realised by the researchers of the Department of Future Technologies, University of Turku. For more information on the technical details of BLAST and the processing of data, see Vesanto et al. 2017; Salmi et al. 2021. To avoid boilerplate results in the reuse chains, the minimum length of passages was set to 300 characters. The original OCR data is not perfectly segmented into articles, so elements such as page breaks, pictures (etc.) in the original image can cause multiple clusters of similar passages. Therefore, the absolute number of found passages does not necessarily reflect the actual level of reuse.
+The text reuse detection method applied in this project is based on the National Center for Biotechnology Information Basic Local Alignment Search Tool (NCBI BLAST). This software was initially developed for matching biological sequences, but it can also be used for tracing duplicated text passages from a corpus of scanned and OCR-recognized newspapers and journals. This application of BLAST has been realised by the researchers of the Department of Future Technologies, University of Turku. For more information on the technical details of BLAST and the processing of data, see Vesanto et al. 2017; Salmi et al. 2021. To avoid boilerplate results in the reuse chains, the minimum length of passages was set to 300 characters. The original OCR data is not perfectly segmented into articles, so elements such as page breaks, pictures et cetera in the original image can cause multiple clusters of similar passages. Therefore, the absolute number of found passages does not necessarily reflect the actual level of reuse.
 
 <br />
 <br />
@@ -60,11 +60,12 @@ The database allows free searches into the detected text reuse cases. It is poss
 
 <br />
 <br />
-After switching into clusters, the interface offers several features for filtering and organising data. On the left, the clusters can be limited through eight parameters: starting country, starting location, starting year of appearance, span across multiple countries, port city, port country, incoming city, and incoming country. From the perspective of information flows, “span across multiple countries” is important. If the user clicks “Yes”, the search will be limited into clusters where the text has been published in either two of the geographical regions (Finland, Sweden, the United States) or all of them. "Port city" means the last city of the reprint cluster in its country of the first printing, so the city (presumably) "sends" the text overseas. An "incoming city" then refers to the first printing location of a text in another country.
+After switching into clusters, the interface offers several features for filtering and organising data. On the left, the clusters can be limited through nine parameters: starting country, starting location, starting year of appearance, span across multiple countries, multiple starting locations, port city, port country, incoming city, and incoming country. From the perspective of information flows, “span across multiple countries” is important. If the user clicks “Yes”, the search will be limited into clusters where the text has been published in either two of the geographical regions (Finland, Sweden, the United States) or all of them. “Port city” means the last city of the reprint cluster in its country of the first printing, so the city (presumably) “sends” the text overseas. An “incoming city” then refers to the first printing location of a text in another country.
+
 
 <br />
 <br />
-In the interface of the database, there is also a sorting function on the right corner above. From there, the results can be organised by average length, starting and ending dates, starting country or location, number of unique locations, and starting year. It is also possible to sort by count, timespan (in days), gap (in years), and virality score. “Count” means how many hits there are in the cluster. “Timespan” refers to the length of the cluster in days. “Gap” in turn allows the user to find clusters where there are significant breaks in the chain of texts. If a text has been printed for the first time in 1800 and several times from 1877 onwards, there is a gap of 77 years.
+In the interface of the database, there is also a sorting function on the right corner above.  From there, the results can be organised by average length, starting and ending dates, starting country or location, number of unique locations, and starting year. It is also possible to sort by count, timespan (in days), gap (in years), and virality score. “Count” means how many hits there are in the cluster. “Timespan” refers to the length of the cluster in days.“Gap” in turn allows the user to find clusters where there are significant breaks in the chain of texts. For example, if a text has been printed for the first time in 1800 and several times from 1877 onwards, there is a gap of 77 years. (For more on the “gap”, see instructions below.)
 
 <br />
 <br />
@@ -72,8 +73,7 @@ The virality score is a way of approaching how efficiently a particular text is 
 
 <br />
 <br />
-Using the database, including its map function, requires both caution and imagination. A text passage occurring first in, say, Helsinki on July 30, 1850, and then in Stockholm on August 10 and in Gothenburg on August 20, might mean that 1) they all reprint a letter or an ad that was sent to them, 2) all three newspapers independently quote a fourth newspaper (not included in the data set), 3) the Stockholm and Gothenburg editors were both subscribing to the Helsinki paper and quote directly from it, 4) the Gothenburg paper quotes the Stockholm paper which in turn quotes the Helsinki one, or 5) some combination of these scenarios. In other words, establishing the actual physical (or electrical) transportation of information requires more information. Sometimes this information can be found in the texts that these passages are part of, sometimes other sources need to be consulted, and often it is still not possible to determine. On the other hand, if the case in question is viewed in terms of an immaterial dissipation of content, something did indeed spread in time and space, from Helsinki via Stockholm to Gothenburg. Therefore and on the same note, terms like port city, incoming city and virality score, which are used in the database, must be employed with judgement; a literal understanding demands some backup information, while a metaphorical one might need some framing and explication.
-
+Using the database, including its map function, requires both caution and imagination. A text passage occurring first in, say, Helsinki on 30 July 1850, and then in Stockholm on 10 August and in Gothenburg on 20 August, might mean that 1) they all reprint a letter or an ad that was sent to them, 2) all three newspapers independently quote a fourth newspaper (not included in the data set), 3) the Stockholm and Gothenburg editors were both subscribing to the Helsinki paper and quote directly from it, 4) the Gothenburg paper quotes the Stockholm paper which in turn quotes the Helsinki one, or 5) some combination of these scenarios. In other words, establishing the actual physical (or electrical) transportation of information requires more information. Sometimes this information can be found in the texts that these passages are part of, sometimes other sources need to be consulted, and often it is still not possible to determine. On the other hand, if the case in question is viewed in terms of an immaterial dissipation of content, something did indeed spread in time and space, from Helsinki via Stockholm to Gothenburg. Therefore and on the same note, terms like port city, incoming city and virality score, which are used in the database, must be employed with judgement; a literal understanding demands some backup information, while a metaphorical one might need some framing and explication.
 
 
 <br />
