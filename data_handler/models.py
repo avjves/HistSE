@@ -314,6 +314,7 @@ class DataHandler:
             elif data_config.enrich_tidningar_URLs and 'tidningar.kb.se' in data:
                 newspaper_name = data.split("newspaper=")[1].split("&")[0]
                 url = data.replace(newspaper_name, newspaper_name.upper())
+                url = url.replace("?newspaper=", "search?newspaper=")
                 return url
             else:
                 return data
