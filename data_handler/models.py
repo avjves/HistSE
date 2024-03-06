@@ -245,7 +245,8 @@ class DataHandler:
         data_results = data
         for result in data:
             fields = list(result.keys())
-            fields.sort()
+            # fields.sort()
+            fields = natsorted(fields)
             values = [[field_mapping[field], field, self._enrich_hit_result(result[field], field, parameters)] for field in fields if field in field_mapping]
             results.append(values)
             ids.append(result['id'])
@@ -313,6 +314,7 @@ class DataHandler:
             elif data_config.enrich_tidningar_URLs and 'tidningar.kb.se' in data:
                 newspaper_name = data.split("newspaper=")[1].split("&")[0]
                 url = data.replace(newspaper_name, newspaper_name.upper())
+                url = url.replace("?newspaper=", "search?newspaper=")
                 return url
             else:
                 return data
@@ -583,6 +585,7 @@ class DataHandler:
         flows_url = url.replace("/map", "/flows/map")
         # access_token = 'pk.eyJ1IjoiYXZqdmVzIiwiYSI6ImNrbHR4YmllYTBoZG4yb213cGNnbzZicHYifQ.vSaa0xMyKGztHbahyM6h2A'
         # flow_url = "https://flowmap.blue/from-url?flows={}&locations={}&mapbox.accessToken={}".format(flows_url, loc_url, access_token)
+        access_token = 'pk.eyJ1IjoiYXZqdmVzIiwiYSI6ImNrbHR4YmllYTBoZG4yb213cGNnbzZicHYifQ.vSaa0xMyKGztHbahyM6h2A'
         flow_url = "https://flowmap.blue/from-url?flows={}&locations={}".format(flows_url, loc_url)
         return {'flow_map': flow_url}
         
